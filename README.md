@@ -5,7 +5,7 @@ This is a static multi-page HTML dashboard template designed for GitHub Pages.
 ## Files
 
 - `index.html` — Overview page
-- `Lucas Growth Plan.html` — Power tab
+- `Lucas Growth Plan.html` — Lucas Growth Plan tab
 - `gas.html` — Gas tab
 - `load.html` — Load tab
 - `curves.html` — Curves tab

@@ -1,79 +1,414 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | Overview</title>
-  <link rel="stylesheet" href="assets/style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lucas Dashboard — Contents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ───────── Dashboard-specific styles ───────── */
+
+    .dash-today {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 32px;
+      padding: 22px 0 28px;
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 36px;
+    }
+    .dash-today-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 8px;
+    }
+    .dash-today-date {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 38px;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .dash-today-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-2);
+      letter-spacing: 0.04em;
+      text-align: right;
+      line-height: 1.7;
+    }
+    .dash-today-meta .row { display: grid; grid-template-columns: 90px 1fr; gap: 12px; }
+    .dash-today-meta .row span:first-child { color: var(--ink-3); }
+    .dash-today-meta a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+    .dash-today-meta a:hover { border-bottom-color: var(--accent); }
+
+    /* Section heading */
+    .dash-section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--ink);
+      margin: 36px 0 22px;
+    }
+    .dash-section-head .num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .dash-section-head .title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 24px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .dash-section-head .note {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--ink-3);
+      margin-left: auto;
+    }
+
+    /* TOC rows */
+    .toc-list {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+    }
+    .toc-row {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      align-items: start;
+      gap: 24px;
+      padding: 22px 4px;
+      border-bottom: 1px solid var(--rule-soft);
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      transition: background 120ms ease, padding 160ms ease;
+    }
+    .toc-row:hover {
+      background: var(--paper-2);
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    .toc-row:hover .toc-arrow { color: var(--accent); transform: translateX(4px); }
+    .toc-row:hover .toc-title { color: var(--ink); }
+
+    .toc-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--ink-3);
+      padding-top: 8px;
+    }
+    .toc-body { min-width: 0; }
+    .toc-title {
+      font-family: var(--serif);
+      font-size: 30px;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      line-height: 1.1;
+      margin: 0 0 8px;
+      transition: color 120ms ease;
+    }
+    .toc-title .italic { font-style: italic; }
+    .toc-desc {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      margin: 0 0 10px;
+      max-width: 62ch;
+    }
+    .toc-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .toc-tag {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      padding: 3px 8px;
+      border: 1px solid var(--rule-soft);
+    }
+    .toc-tag.is-accent { color: var(--accent); border-color: oklch(0.85 0.06 40); background: oklch(0.97 0.03 60); }
+
+    .toc-arrow {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 36px;
+      color: var(--ink-3);
+      align-self: center;
+      transition: color 120ms ease, transform 160ms ease;
+      padding-right: 4px;
+    }
+
+    /* Featured row — Daily Sheet */
+    .toc-row.is-featured {
+      background: var(--paper-2);
+      border-left: 2px solid var(--accent);
+      padding-left: 22px;
+      padding-right: 22px;
+    }
+    .toc-row.is-featured .toc-title { font-size: 38px; }
+    .toc-row.is-featured:hover { background: oklch(0.94 0.018 70); }
+
+    /* Smaller rows for sub-references (words + meals) */
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .toc-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 22px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      text-decoration: none;
+      color: inherit;
+      background: var(--paper);
+      transition: background 120ms ease;
+      position: relative;
+    }
+    .toc-mini:hover { background: var(--paper-2); }
+    .toc-mini:hover .toc-mini-arrow { color: var(--accent); transform: translateX(3px); }
+    .toc-mini-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .toc-mini-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      line-height: 1.15;
+      margin: 4px 0 4px;
+    }
+    .toc-mini-title .italic { font-style: italic; }
+    .toc-mini-desc {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13.5px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .toc-mini-arrow {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 22px;
+      color: var(--ink-3);
+      position: absolute;
+      right: 18px;
+      bottom: 16px;
+      transition: color 120ms ease, transform 160ms ease;
+    }
+
+    /* Quick links / utility */
+    .util-bar {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      margin-top: 28px;
+      border: 1px solid var(--rule);
+      background: var(--paper-2);
+    }
+    .util-cell {
+      padding: 16px 20px;
+      border-right: 1px solid var(--rule-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .util-cell:last-child { border-right: none; }
+    .util-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .util-val {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--ink);
+    }
+    .util-val a { color: inherit; border-bottom: 1px solid var(--rule); text-decoration: none; padding-bottom: 1px; }
+    .util-val a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    @media (max-width: 920px) {
+      .dash-today { grid-template-columns: 1fr; }
+      .dash-today-meta { text-align: left; }
+      .toc-row { grid-template-columns: 1fr; gap: 8px; padding: 16px 0; }
+      .toc-arrow { display: none; }
+      .toc-grid { grid-template-columns: 1fr; }
+      .util-bar { grid-template-columns: 1fr; }
+      .util-cell { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+    }
+  </style>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark">D</div>
+  <div class="page">
+
+    <!-- Masthead -->
+    <header class="masthead">
       <div>
-        <h1>Dashboard</h1>
-        <p>GitHub Pages Template</p>
+        <div class="masthead-eyebrow">
+          <span class="dot"></span>
+          <span>The Lucas Dashboard</span>
+          <span>·</span>
+          <span>Everything in one place</span>
+        </div>
+        <h1 class="masthead-title">Lucas <span class="amp">&amp;</span> his year</h1>
+        <p class="masthead-sub">A small private notebook — the daily log, the six-month plan, his first words in two languages, and the meals we cook from.</p>
       </div>
-    </div>
-
-    <nav class="nav-links" aria-label="Dashboard navigation">
-      <a href="index.html" class="nav-link active">Overview</a>
-      <a href="Lucas Growth Plan.html" class="nav-link">Lucas Growth Plan</a>
-      <a href="Lucas Meal Library.html" class="nav-link">Lucas Meal Library</a>
-      <a href="Lucas Words - English.html" class="nav-link">Lucas Words - English</a>
-      <a href="Lucas Words - Mandarin.html" class="nav-link">Lucas Words - Mandarin</a>
-    </nav>
-  </aside>
-
-  <main class="main-content">
-    <header class="topbar">
-      <button class="menu-button" id="menuButton" aria-label="Toggle navigation">☰</button>
-      <div>
-        <h2>Overview</h2>
-        <p>Replace this page with your main dashboard summary.</p>
+      <div class="masthead-meta">
+        <div class="row"><span>Edition</span><span>v1 · 2026</span></div>
+        <div class="row"><span>Compiled by</span><span>Mom &amp; Dad</span></div>
+        <div class="row"><span>Sections</span><span>5</span></div>
       </div>
     </header>
 
-    <section class="hero-card">
+    <!-- Today strip -->
+    <div class="dash-today">
       <div>
-        <p class="eyebrow">Dashboard Home</p>
-        <h3>Static multi-page dashboard template</h3>
-        <p>
-          This template is designed for GitHub Pages. Each tab is a separate HTML file,
-          while the navigation, styling, and basic behavior are shared across the site.
-        </p>
+        <div class="dash-today-label">Today</div>
+        <div class="dash-today-date" id="todayDate">—</div>
       </div>
-    </section>
+      <div class="dash-today-meta">
+        <div class="row"><span>Open daily</span><span><a href="Lucas Daily Sheet.html">Daily Sheet →</a></span></div>
+        <div class="row"><span>This week</span><span><a href="Lucas Meal Library.html">Meal plan →</a></span></div>
+        <div class="row"><span>Horizon</span><span><a href="Lucas Growth Plan.html">Next 6 months →</a></span></div>
+      </div>
+    </div>
 
-    <section class="grid cards-grid">
-      <article class="card">
-        <p class="card-label">Metric One</p>
-        <h4>123.4</h4>
-        <p>Replace this with a KPI, chart, or data summary.</p>
-      </article>
+    <!-- ── Section: Live -->
+    <div class="dash-section-head">
+      <span class="num">§ 01</span>
+      <span class="title">The everyday record</span>
+      <span class="note">used daily</span>
+    </div>
 
-      <article class="card">
-        <p class="card-label">Metric Two</p>
-        <h4>56.7%</h4>
-        <p>Use the cards as placeholders for your own dashboard sections.</p>
-      </article>
+    <div class="toc-list">
+      <a class="toc-row is-featured" href="Lucas Daily Sheet.html">
+        <span class="toc-num">001</span>
+        <div class="toc-body">
+          <h2 class="toc-title">Lucas Daily <span class="italic">Sheet</span></h2>
+          <p class="toc-desc">A small, complete record of the day — what we fed, what we noticed, what we'll need to remember tomorrow. Schedule, feeds, mood, milestones, handoff notes.</p>
+          <div class="toc-tags">
+            <span class="toc-tag is-accent">Open every day</span>
+            <span class="toc-tag">Editable</span>
+            <span class="toc-tag">Auto-saves</span>
+            <span class="toc-tag">Print-ready</span>
+          </div>
+        </div>
+        <span class="toc-arrow">→</span>
+      </a>
 
-      <article class="card">
-        <p class="card-label">Metric Three</p>
-        <h4>$89.10</h4>
-        <p>Add tables, embedded charts, Plotly visuals, or static images here.</p>
-      </article>
-    </section>
+      <a class="toc-row" href="Lucas Growth Plan.html">
+        <span class="toc-num">002</span>
+        <div class="toc-body">
+          <h2 class="toc-title">The next <span class="italic">six</span> months</h2>
+          <p class="toc-desc">A working plan, not a checklist. What we'll watch for, bring into the house, book with the doctor, prepare for, and keep an eye on — with 3- and 6-month horizons.</p>
+          <div class="toc-tags">
+            <span class="toc-tag">Milestones</span>
+            <span class="toc-tag">Tools &amp; skills</span>
+            <span class="toc-tag">Health</span>
+            <span class="toc-tag">Concerns</span>
+          </div>
+        </div>
+        <span class="toc-arrow">→</span>
+      </a>
+    </div>
 
-    <section class="content-panel">
-      <h3>How to customize</h3>
-      <p>
-        Replace the content inside <code>&lt;main class="main-content"&gt;</code> on each HTML page.
-        Keep the sidebar and shared asset links if you want the navigation and design to remain consistent.
-      </p>
-    </section>
-  </main>
+    <!-- ── Section: Reference shelf -->
+    <div class="dash-section-head">
+      <span class="num">§ 02</span>
+      <span class="title">The reference shelf</span>
+      <span class="note">words &amp; meals</span>
+    </div>
 
-  <script src="assets/script.js"></script>
+    <div class="toc-grid">
+      <a class="toc-mini" href="Lucas Words - English.html">
+        <span class="toc-mini-num">A · English</span>
+        <h3 class="toc-mini-title">First 100 — <span class="italic">English</span></h3>
+        <p class="toc-mini-desc">High-frequency toddler words, grouped: people, body, animals, food, actions, little words.</p>
+        <span class="toc-mini-arrow">→</span>
+      </a>
+
+      <a class="toc-mini" href="Lucas Words - Mandarin.html">
+        <span class="toc-mini-num">B · 中文</span>
+        <h3 class="toc-mini-title">First 100 — <span class="italic">Mandarin</span></h3>
+        <p class="toc-mini-desc">汉字 · pīnyīn · English gloss. Same families, voiced in Mandarin.</p>
+        <span class="toc-mini-arrow">→</span>
+      </a>
+
+      <a class="toc-mini" href="Lucas Meal Library.html">
+        <span class="toc-mini-num">C · Kitchen</span>
+        <h3 class="toc-mini-title">Meal <span class="italic">Library</span></h3>
+        <p class="toc-mini-desc">The ideal seven-day plan, the nutrition it delivers, and the swap libraries for every slot.</p>
+        <span class="toc-mini-arrow">→</span>
+      </a>
+    </div>
+
+    <!-- ── Utility -->
+    <div class="util-bar">
+      <div class="util-cell">
+        <span class="util-label">Standalone (offline) copies</span>
+        <span class="util-val">
+          <a href="Lucas Daily Sheet (standalone).html">Daily Sheet</a> ·
+          <a href="Lucas Growth Plan (standalone).html">Growth Plan</a> ·
+          <a href="Lucas Words - English (standalone).html">Words EN</a> ·
+          <a href="Lucas Words - Mandarin (standalone).html">Words ZH</a> ·
+          <a href="Lucas Meal Library (standalone).html">Meals</a>
+        </span>
+      </div>
+      <div class="util-cell">
+        <span class="util-label">Combined reference</span>
+        <span class="util-val"><a href="Lucas Reference.html">Words &amp; Meals in one file →</a></span>
+      </div>
+    </div>
+
+    <!-- Colophon -->
+    <footer class="colophon">
+      <span>The Lucas Dashboard · v1 · 2026</span>
+      <span>Set in Newsreader · IBM Plex · Noto Serif SC</span>
+    </footer>
+
+  </div>
+
+  <script>
+    // Today's date — editorial style
+    (function() {
+      const d = new Date();
+      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      const s = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+      const el = document.getElementById("todayDate");
+      if (el) el.textContent = s;
+    })();
+  </script>
 </body>
 </html>

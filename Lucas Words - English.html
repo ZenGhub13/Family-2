@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lucas — First 100 Words (English)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ───────── Reference-specific styles ───────── */
+
+    .ref-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 40px;
+    }
+    .ref-tab {
+      background: var(--paper);
+      text-decoration: none;
+      color: inherit;
+      border: none;
+      border-right: 1px solid var(--rule-soft);
+      padding: 18px 20px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: background 120ms ease;
+      position: relative;
+    }
+    .ref-tab:last-child { border-right: none; }
+    .ref-tab:hover { background: var(--paper-2); }
+    .ref-tab .tab-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .ref-tab .tab-name {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .ref-tab .tab-sub {
+      font-family: var(--sans);
+      font-size: 11px;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+    .ref-tab.is-on { background: var(--paper-2); }
+    .ref-tab.is-on .tab-num { color: var(--accent); }
+    .ref-tab.is-on::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    .ref-panel { display: none; }
+    .ref-panel.is-on { display: block; }
+
+    /* Word groups */
+    .lex-group {
+      margin-bottom: 36px;
+    }
+    .lex-group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 18px;
+    }
+    .lex-group-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .lex-group-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .lex-group-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--ink-3);
+      margin-left: auto;
+    }
+
+    /* English grid */
+    .en-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .en-cell {
+      padding: 12px 14px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: baseline;
+      gap: 10px;
+      min-height: 48px;
+    }
+    .en-cell .n {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+    }
+    .en-cell .w {
+      font-family: var(--serif);
+      font-size: 19px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .en-cell.is-action .w {
+      font-style: italic;
+    }
+    .en-cell.is-social .w {
+      color: var(--accent);
+    }
+
+    /* Mandarin grid */
+    .zh-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .zh-cell {
+      padding: 14px 16px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: baseline;
+      gap: 10px;
+      min-height: 68px;
+    }
+    .zh-cell .n {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+      padding-top: 6px;
+    }
+    .zh-body { display: flex; flex-direction: column; gap: 2px; }
+    .zh-hanzi {
+      font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+      font-size: 26px;
+      line-height: 1.1;
+      color: var(--ink);
+      font-weight: 400;
+    }
+    .zh-pinyin {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+    .zh-en {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+
+    /* Meals — re-styled cards */
+    .meal-intro {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 16px;
+      color: var(--ink-2);
+      max-width: 64ch;
+      margin: 0 0 22px;
+      line-height: 1.55;
+    }
+    .meal-rules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .meal-rule {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      background: var(--paper);
+    }
+    .meal-rule.is-egg { background: oklch(0.95 0.04 290); color: oklch(0.4 0.16 290); border-color: oklch(0.85 0.06 290); }
+    .meal-rule.is-iron { background: oklch(0.95 0.04 30); color: oklch(0.4 0.14 30); border-color: oklch(0.85 0.07 30); }
+    .meal-rule.is-fish { background: oklch(0.95 0.04 240); color: oklch(0.4 0.14 240); border-color: oklch(0.85 0.07 240); }
+
+    /* Day plan table */
+    .week-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      font-size: 12px;
+    }
+    .week-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-align: left;
+      font-weight: 500;
+      padding: 10px 12px 10px 0;
+      border-bottom: 1px solid var(--ink);
+      vertical-align: bottom;
+    }
+    .week-table td {
+      padding: 14px 12px 14px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      vertical-align: top;
+      font-family: var(--sans);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+    .week-table td.day {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 18px;
+      color: var(--ink);
+      width: 60px;
+      letter-spacing: -0.01em;
+    }
+    .week-table .m-name {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+      margin-bottom: 3px;
+      display: block;
+    }
+    .week-table .m-detail {
+      font-family: var(--sans);
+      font-size: 11.5px;
+      color: var(--ink-2);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .week-table .m-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* Tag chips for nutrients */
+    .ntag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      margin: 1px 3px 1px 0;
+      border-radius: 0;
+      border: 1px solid transparent;
+    }
+    .ntag-iron    { background: oklch(0.96 0.04 30);  color: oklch(0.42 0.16 30); }
+    .ntag-dha     { background: oklch(0.96 0.04 240); color: oklch(0.42 0.14 240); }
+    .ntag-choline { background: oklch(0.96 0.04 290); color: oklch(0.42 0.14 290); }
+    .ntag-calcium { background: oklch(0.96 0.04 140); color: oklch(0.42 0.12 140); }
+    .ntag-vitc    { background: oklch(0.96 0.05 70);  color: oklch(0.45 0.12 60); }
+    .ntag-vita    { background: oklch(0.96 0.05 80);  color: oklch(0.45 0.12 80); }
+    .ntag-iodine  { background: oklch(0.96 0.04 200); color: oklch(0.42 0.12 200); }
+    .ntag-folate  { background: oklch(0.96 0.04 340); color: oklch(0.42 0.14 340); }
+    .ntag-zinc    { background: oklch(0.95 0.01 60);  color: oklch(0.4 0.01 60); }
+    .ntag-fat     { background: oklch(0.95 0.01 60);  color: oklch(0.4 0.01 60); }
+    .badge-fish { color: oklch(0.42 0.14 240); font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; margin-right: 6px; }
+
+    /* Library card list */
+    .lib-slot-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 26px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--ink);
+    }
+    .lib-slot-head:first-child { margin-top: 0; }
+
+    .lib-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .lib-card-x {
+      padding: 18px 20px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--paper);
+    }
+    .lib-card-x .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .lib-card-x .name {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+      line-height: 1.25;
+    }
+    .lib-card-x .origin {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-left: 6px;
+    }
+    .lib-card-x .slot {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 3px 7px;
+      border: 1px solid var(--rule-soft);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .lib-card-x .desc {
+      font-family: var(--serif);
+      font-size: 13.5px;
+      color: var(--ink-2);
+      line-height: 1.55;
+      font-style: italic;
+    }
+    .lib-card-x .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .week-summary {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ink-2);
+      background: var(--paper-2);
+      border-left: 2px solid var(--accent);
+      padding: 14px 18px;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .week-summary strong { font-style: normal; color: var(--ink); font-weight: 500; }
+
+    .nut-proof-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .nut-proof-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-align: left;
+      font-weight: 500;
+      padding: 10px 12px 10px 0;
+      border-bottom: 1px solid var(--ink);
+    }
+    .nut-proof-table td {
+      padding: 9px 12px 9px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .nut-proof-table td.label {
+      font-family: var(--serif);
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .good { color: oklch(0.5 0.13 145); font-weight: 500; }
+    .warn { color: oklch(0.55 0.13 60); font-weight: 500; }
+    .bad  { color: oklch(0.5 0.15 25); font-weight: 500; }
+
+    .meals-subnav {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .meals-subnav button {
+      background: none;
+      border: none;
+      padding: 10px 18px 10px 0;
+      margin-right: 18px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 120ms ease, border-color 120ms ease;
+    }
+    .meals-subnav button:hover { color: var(--ink); }
+    .meals-subnav button.is-on { color: var(--ink); border-bottom-color: var(--accent); }
+
+    .meals-subpanel { display: none; }
+    .meals-subpanel.is-on { display: block; }
+
+    @media (max-width: 920px) {
+      .ref-tabs { grid-template-columns: 1fr; }
+      .ref-tab { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+      .en-grid { grid-template-columns: repeat(2, 1fr); }
+      .zh-grid { grid-template-columns: 1fr; }
+      .lib-list { grid-template-columns: 1fr; }
+      .week-table { display: block; overflow-x: auto; }
+    }
+
+    @media print {
+      .ref-tabs, .meals-subnav { display: none !important; }
+      .ref-panel { display: block !important; page-break-before: always; }
+      .ref-panel:first-of-type { page-break-before: auto; }
+      .meals-subpanel { display: block !important; page-break-before: always; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Masthead -->
+    <header class="masthead">
+      <div>
+        <div class="masthead-eyebrow">
+          <span class="dot"></span>
+          <span>The Lucas Reference</span>
+          <span>·</span>
+          <span>Vol. 1 — English</span>
+        </div>
+        <h1 class="masthead-title">First 100 — English</h1>
+        <p class="masthead-sub">A working set of high-frequency words for the toddler years — drawn from the families children acquire fastest.</p>
+      </div>
+      <div class="masthead-meta">
+        <div class="row"><span>Edition</span><span>v1 · 2026</span></div>
+        <div class="row"><span>Pairs with</span><span><a class="masthead-link" href="Lucas Daily Sheet.html">Daily Sheet</a></span></div>
+        <div class="row"><span>&nbsp;</span><span><a class="masthead-link" href="Lucas Growth Plan.html">Growth Plan</a></span></div>
+      </div>
+    </header>
+
+    <section class="ref-panel is-on" id="panel-en" data-screen-label="01 English">
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="kicker">Tab 01 · Word list</div>
+            <h2 class="display">First 100 — English</h2>
+          </div>
+          <p class="sub">A working set of high-frequency words for the toddler years — drawn from the categories children acquire fastest (people, body, food, animals, simple actions). Read aloud, point to, repeat.</p>
+        </div>
+
+        <!-- Groups -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 01</span>
+            <span class="lex-group-title">People</span>
+            <span class="lex-group-count">10 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">001</span><span class="w">mommy</span></div>
+            <div class="en-cell"><span class="n">002</span><span class="w">daddy</span></div>
+            <div class="en-cell"><span class="n">003</span><span class="w">baby</span></div>
+            <div class="en-cell"><span class="n">004</span><span class="w">grandma</span></div>
+            <div class="en-cell"><span class="n">005</span><span class="w">grandpa</span></div>
+            <div class="en-cell"><span class="n">006</span><span class="w">brother</span></div>
+            <div class="en-cell"><span class="n">007</span><span class="w">sister</span></div>
+            <div class="en-cell"><span class="n">008</span><span class="w">friend</span></div>
+            <div class="en-cell"><span class="n">009</span><span class="w">person</span></div>
+            <div class="en-cell"><span class="n">010</span><span class="w">family</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 02</span>
+            <span class="lex-group-title">Body</span>
+            <span class="lex-group-count">12 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">011</span><span class="w">eye</span></div>
+            <div class="en-cell"><span class="n">012</span><span class="w">nose</span></div>
+            <div class="en-cell"><span class="n">013</span><span class="w">mouth</span></div>
+            <div class="en-cell"><span class="n">014</span><span class="w">ear</span></div>
+            <div class="en-cell"><span class="n">015</span><span class="w">hand</span></div>
+            <div class="en-cell"><span class="n">016</span><span class="w">foot</span></div>
+            <div class="en-cell"><span class="n">017</span><span class="w">hair</span></div>
+            <div class="en-cell"><span class="n">018</span><span class="w">tooth</span></div>
+            <div class="en-cell"><span class="n">019</span><span class="w">tummy</span></div>
+            <div class="en-cell"><span class="n">020</span><span class="w">head</span></div>
+            <div class="en-cell"><span class="n">021</span><span class="w">finger</span></div>
+            <div class="en-cell"><span class="n">022</span><span class="w">toe</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 03</span>
+            <span class="lex-group-title">Animals</span>
+            <span class="lex-group-count">12 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">023</span><span class="w">dog</span></div>
+            <div class="en-cell"><span class="n">024</span><span class="w">cat</span></div>
+            <div class="en-cell"><span class="n">025</span><span class="w">bird</span></div>
+            <div class="en-cell"><span class="n">026</span><span class="w">fish</span></div>
+            <div class="en-cell"><span class="n">027</span><span class="w">duck</span></div>
+            <div class="en-cell"><span class="n">028</span><span class="w">cow</span></div>
+            <div class="en-cell"><span class="n">029</span><span class="w">pig</span></div>
+            <div class="en-cell"><span class="n">030</span><span class="w">horse</span></div>
+            <div class="en-cell"><span class="n">031</span><span class="w">sheep</span></div>
+            <div class="en-cell"><span class="n">032</span><span class="w">bear</span></div>
+            <div class="en-cell"><span class="n">033</span><span class="w">monkey</span></div>
+            <div class="en-cell"><span class="n">034</span><span class="w">bunny</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 04</span>
+            <span class="lex-group-title">Food &amp; drink</span>
+            <span class="lex-group-count">15 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">035</span><span class="w">milk</span></div>
+            <div class="en-cell"><span class="n">036</span><span class="w">water</span></div>
+            <div class="en-cell"><span class="n">037</span><span class="w">bread</span></div>
+            <div class="en-cell"><span class="n">038</span><span class="w">cheese</span></div>
+            <div class="en-cell"><span class="n">039</span><span class="w">apple</span></div>
+            <div class="en-cell"><span class="n">040</span><span class="w">banana</span></div>
+            <div class="en-cell"><span class="n">041</span><span class="w">egg</span></div>
+            <div class="en-cell"><span class="n">042</span><span class="w">rice</span></div>
+            <div class="en-cell"><span class="n">043</span><span class="w">cookie</span></div>
+            <div class="en-cell"><span class="n">044</span><span class="w">juice</span></div>
+            <div class="en-cell"><span class="n">045</span><span class="w">yogurt</span></div>
+            <div class="en-cell"><span class="n">046</span><span class="w">meat</span></div>
+            <div class="en-cell"><span class="n">047</span><span class="w">soup</span></div>
+            <div class="en-cell"><span class="n">048</span><span class="w">pasta</span></div>
+            <div class="en-cell"><span class="n">049</span><span class="w">berry</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 05</span>
+            <span class="lex-group-title">Clothes</span>
+            <span class="lex-group-count">6 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">050</span><span class="w">shoe</span></div>
+            <div class="en-cell"><span class="n">051</span><span class="w">sock</span></div>
+            <div class="en-cell"><span class="n">052</span><span class="w">hat</span></div>
+            <div class="en-cell"><span class="n">053</span><span class="w">shirt</span></div>
+            <div class="en-cell"><span class="n">054</span><span class="w">coat</span></div>
+            <div class="en-cell"><span class="n">055</span><span class="w">diaper</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 06</span>
+            <span class="lex-group-title">Things that go</span>
+            <span class="lex-group-count">6 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">056</span><span class="w">car</span></div>
+            <div class="en-cell"><span class="n">057</span><span class="w">truck</span></div>
+            <div class="en-cell"><span class="n">058</span><span class="w">bus</span></div>
+            <div class="en-cell"><span class="n">059</span><span class="w">train</span></div>
+            <div class="en-cell"><span class="n">060</span><span class="w">plane</span></div>
+            <div class="en-cell"><span class="n">061</span><span class="w">boat</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 07</span>
+            <span class="lex-group-title">Around the house</span>
+            <span class="lex-group-count">10 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">062</span><span class="w">bed</span></div>
+            <div class="en-cell"><span class="n">063</span><span class="w">chair</span></div>
+            <div class="en-cell"><span class="n">064</span><span class="w">table</span></div>
+            <div class="en-cell"><span class="n">065</span><span class="w">door</span></div>
+            <div class="en-cell"><span class="n">066</span><span class="w">cup</span></div>
+            <div class="en-cell"><span class="n">067</span><span class="w">spoon</span></div>
+            <div class="en-cell"><span class="n">068</span><span class="w">bowl</span></div>
+            <div class="en-cell"><span class="n">069</span><span class="w">light</span></div>
+            <div class="en-cell"><span class="n">070</span><span class="w">bath</span></div>
+            <div class="en-cell"><span class="n">071</span><span class="w">book</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 08</span>
+            <span class="lex-group-title">Toys &amp; play</span>
+            <span class="lex-group-count">5 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">072</span><span class="w">ball</span></div>
+            <div class="en-cell"><span class="n">073</span><span class="w">doll</span></div>
+            <div class="en-cell"><span class="n">074</span><span class="w">blocks</span></div>
+            <div class="en-cell"><span class="n">075</span><span class="w">balloon</span></div>
+            <div class="en-cell"><span class="n">076</span><span class="w">bubble</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 09</span>
+            <span class="lex-group-title">Outside &amp; nature</span>
+            <span class="lex-group-count">7 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell"><span class="n">077</span><span class="w">sun</span></div>
+            <div class="en-cell"><span class="n">078</span><span class="w">moon</span></div>
+            <div class="en-cell"><span class="n">079</span><span class="w">star</span></div>
+            <div class="en-cell"><span class="n">080</span><span class="w">tree</span></div>
+            <div class="en-cell"><span class="n">081</span><span class="w">flower</span></div>
+            <div class="en-cell"><span class="n">082</span><span class="w">rain</span></div>
+            <div class="en-cell"><span class="n">083</span><span class="w">snow</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 10</span>
+            <span class="lex-group-title">Actions</span>
+            <span class="lex-group-count">12 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell is-action"><span class="n">084</span><span class="w">eat</span></div>
+            <div class="en-cell is-action"><span class="n">085</span><span class="w">drink</span></div>
+            <div class="en-cell is-action"><span class="n">086</span><span class="w">sleep</span></div>
+            <div class="en-cell is-action"><span class="n">087</span><span class="w">walk</span></div>
+            <div class="en-cell is-action"><span class="n">088</span><span class="w">run</span></div>
+            <div class="en-cell is-action"><span class="n">089</span><span class="w">jump</span></div>
+            <div class="en-cell is-action"><span class="n">090</span><span class="w">sit</span></div>
+            <div class="en-cell is-action"><span class="n">091</span><span class="w">play</span></div>
+            <div class="en-cell is-action"><span class="n">092</span><span class="w">sing</span></div>
+            <div class="en-cell is-action"><span class="n">093</span><span class="w">read</span></div>
+            <div class="en-cell is-action"><span class="n">094</span><span class="w">look</span></div>
+            <div class="en-cell is-action"><span class="n">095</span><span class="w">help</span></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 11</span>
+            <span class="lex-group-title">Little words</span>
+            <span class="lex-group-count">5 words</span>
+          </div>
+          <div class="en-grid">
+            <div class="en-cell is-social"><span class="n">096</span><span class="w">hi</span></div>
+            <div class="en-cell is-social"><span class="n">097</span><span class="w">bye</span></div>
+            <div class="en-cell is-social"><span class="n">098</span><span class="w">please</span></div>
+            <div class="en-cell is-social"><span class="n">099</span><span class="w">yes</span></div>
+            <div class="en-cell is-social"><span class="n">100</span><span class="w">no</span></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <footer class="colophon">
+      <span>The Lucas Reference — Words &amp; Meals · v1</span>
+      <span>Set in Newsreader · IBM Plex · Noto Serif SC</span>
+    </footer>
+
+  </div>
+</body>
+</html>

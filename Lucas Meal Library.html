@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lucas — Meal Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ───────── Reference-specific styles ───────── */
+
+    .ref-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 40px;
+    }
+    .ref-tab {
+      background: var(--paper);
+      text-decoration: none;
+      color: inherit;
+      border: none;
+      border-right: 1px solid var(--rule-soft);
+      padding: 18px 20px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: background 120ms ease;
+      position: relative;
+    }
+    .ref-tab:last-child { border-right: none; }
+    .ref-tab:hover { background: var(--paper-2); }
+    .ref-tab .tab-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .ref-tab .tab-name {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .ref-tab .tab-sub {
+      font-family: var(--sans);
+      font-size: 11px;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+    .ref-tab.is-on { background: var(--paper-2); }
+    .ref-tab.is-on .tab-num { color: var(--accent); }
+    .ref-tab.is-on::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    .ref-panel { display: none; }
+    .ref-panel.is-on { display: block; }
+
+    /* Word groups */
+    .lex-group {
+      margin-bottom: 36px;
+    }
+    .lex-group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 18px;
+    }
+    .lex-group-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .lex-group-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .lex-group-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--ink-3);
+      margin-left: auto;
+    }
+
+    /* English grid */
+    .en-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .en-cell {
+      padding: 12px 14px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: baseline;
+      gap: 10px;
+      min-height: 48px;
+    }
+    .en-cell .n {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+    }
+    .en-cell .w {
+      font-family: var(--serif);
+      font-size: 19px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .en-cell.is-action .w {
+      font-style: italic;
+    }
+    .en-cell.is-social .w {
+      color: var(--accent);
+    }
+
+    /* Mandarin grid */
+    .zh-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .zh-cell {
+      padding: 14px 16px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: baseline;
+      gap: 10px;
+      min-height: 68px;
+    }
+    .zh-cell .n {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+      padding-top: 6px;
+    }
+    .zh-body { display: flex; flex-direction: column; gap: 2px; }
+    .zh-hanzi {
+      font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+      font-size: 26px;
+      line-height: 1.1;
+      color: var(--ink);
+      font-weight: 400;
+    }
+    .zh-pinyin {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+    .zh-en {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+
+    /* Meals — re-styled cards */
+    .meal-intro {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 16px;
+      color: var(--ink-2);
+      max-width: 64ch;
+      margin: 0 0 22px;
+      line-height: 1.55;
+    }
+    .meal-rules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .meal-rule {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      background: var(--paper);
+    }
+    .meal-rule.is-egg { background: oklch(0.95 0.04 290); color: oklch(0.4 0.16 290); border-color: oklch(0.85 0.06 290); }
+    .meal-rule.is-iron { background: oklch(0.95 0.04 30); color: oklch(0.4 0.14 30); border-color: oklch(0.85 0.07 30); }
+    .meal-rule.is-fish { background: oklch(0.95 0.04 240); color: oklch(0.4 0.14 240); border-color: oklch(0.85 0.07 240); }
+
+    /* Day plan table */
+    .week-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      font-size: 12px;
+    }
+    .week-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-align: left;
+      font-weight: 500;
+      padding: 10px 12px 10px 0;
+      border-bottom: 1px solid var(--ink);
+      vertical-align: bottom;
+    }
+    .week-table td {
+      padding: 14px 12px 14px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      vertical-align: top;
+      font-family: var(--sans);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+    .week-table td.day {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 18px;
+      color: var(--ink);
+      width: 60px;
+      letter-spacing: -0.01em;
+    }
+    .week-table .m-name {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+      margin-bottom: 3px;
+      display: block;
+    }
+    .week-table .m-detail {
+      font-family: var(--sans);
+      font-size: 11.5px;
+      color: var(--ink-2);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .week-table .m-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* Tag chips for nutrients */
+    .ntag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      margin: 1px 3px 1px 0;
+      border-radius: 0;
+      border: 1px solid transparent;
+    }
+    .ntag-iron    { background: oklch(0.96 0.04 30);  color: oklch(0.42 0.16 30); }
+    .ntag-dha     { background: oklch(0.96 0.04 240); color: oklch(0.42 0.14 240); }
+    .ntag-choline { background: oklch(0.96 0.04 290); color: oklch(0.42 0.14 290); }
+    .ntag-calcium { background: oklch(0.96 0.04 140); color: oklch(0.42 0.12 140); }
+    .ntag-vitc    { background: oklch(0.96 0.05 70);  color: oklch(0.45 0.12 60); }
+    .ntag-vita    { background: oklch(0.96 0.05 80);  color: oklch(0.45 0.12 80); }
+    .ntag-iodine  { background: oklch(0.96 0.04 200); color: oklch(0.42 0.12 200); }
+    .ntag-folate  { background: oklch(0.96 0.04 340); color: oklch(0.42 0.14 340); }
+    .ntag-zinc    { background: oklch(0.95 0.01 60);  color: oklch(0.4 0.01 60); }
+    .ntag-fat     { background: oklch(0.95 0.01 60);  color: oklch(0.4 0.01 60); }
+    .badge-fish { color: oklch(0.42 0.14 240); font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; margin-right: 6px; }
+
+    /* Library card list */
+    .lib-slot-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 26px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--ink);
+    }
+    .lib-slot-head:first-child { margin-top: 0; }
+
+    .lib-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .lib-card-x {
+      padding: 18px 20px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--paper);
+    }
+    .lib-card-x .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .lib-card-x .name {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+      line-height: 1.25;
+    }
+    .lib-card-x .origin {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-left: 6px;
+    }
+    .lib-card-x .slot {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 3px 7px;
+      border: 1px solid var(--rule-soft);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .lib-card-x .desc {
+      font-family: var(--serif);
+      font-size: 13.5px;
+      color: var(--ink-2);
+      line-height: 1.55;
+      font-style: italic;
+    }
+    .lib-card-x .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .week-summary {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ink-2);
+      background: var(--paper-2);
+      border-left: 2px solid var(--accent);
+      padding: 14px 18px;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .week-summary strong { font-style: normal; color: var(--ink); font-weight: 500; }
+
+    .nut-proof-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .nut-proof-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-align: left;
+      font-weight: 500;
+      padding: 10px 12px 10px 0;
+      border-bottom: 1px solid var(--ink);
+    }
+    .nut-proof-table td {
+      padding: 9px 12px 9px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .nut-proof-table td.label {
+      font-family: var(--serif);
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .good { color: oklch(0.5 0.13 145); font-weight: 500; }
+    .warn { color: oklch(0.55 0.13 60); font-weight: 500; }
+    .bad  { color: oklch(0.5 0.15 25); font-weight: 500; }
+
+    .meals-subnav {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .meals-subnav button {
+      background: none;
+      border: none;
+      padding: 10px 18px 10px 0;
+      margin-right: 18px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 120ms ease, border-color 120ms ease;
+    }
+    .meals-subnav button:hover { color: var(--ink); }
+    .meals-subnav button.is-on { color: var(--ink); border-bottom-color: var(--accent); }
+
+    .meals-subpanel { display: none; }
+    .meals-subpanel.is-on { display: block; }
+
+    @media (max-width: 920px) {
+      .ref-tabs { grid-template-columns: 1fr; }
+      .ref-tab { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+      .en-grid { grid-template-columns: repeat(2, 1fr); }
+      .zh-grid { grid-template-columns: 1fr; }
+      .lib-list { grid-template-columns: 1fr; }
+      .week-table { display: block; overflow-x: auto; }
+    }
+
+    @media print {
+      .ref-tabs, .meals-subnav { display: none !important; }
+      .ref-panel { display: block !important; page-break-before: always; }
+      .ref-panel:first-of-type { page-break-before: auto; }
+      .meals-subpanel { display: block !important; page-break-before: always; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Masthead -->
+    <header class="masthead">
+      <div>
+        <div class="masthead-eyebrow">
+          <span class="dot"></span>
+          <span>The Lucas Reference</span>
+          <span>·</span>
+          <span>Vol. 1 — Kitchen</span>
+        </div>
+        <h1 class="masthead-title">Meal Library</h1>
+        <p class="masthead-sub">The ideal seven-day plan, the nutrition it delivers, and the swap libraries that make every slot interchangeable.</p>
+      </div>
+      <div class="masthead-meta">
+        <div class="row"><span>Edition</span><span>v1 · 2026</span></div>
+        <div class="row"><span>Pairs with</span><span><a class="masthead-link" href="Lucas Daily Sheet.html">Daily Sheet</a></span></div>
+        <div class="row"><span>&nbsp;</span><span><a class="masthead-link" href="Lucas Growth Plan.html">Growth Plan</a></span></div>
+      </div>
+    </header>
+
+    <section class="ref-panel is-on" id="panel-meals" data-screen-label="03 Meal Library">
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="kicker">Tab 03 · Kitchen</div>
+            <h2 class="display">Meal Library</h2>
+          </div>
+          <p class="sub">The ideal seven-day plan, the nutrition it delivers, and the swap libraries that make every slot interchangeable. Built around three non-negotiables.</p>
+        </div>
+
+        <div class="meal-rules">
+          <span class="meal-rule is-egg">Egg · daily</span>
+          <span class="meal-rule is-iron">Iron cereal · daily</span>
+          <span class="meal-rule is-fish">Fish · 4× / week</span>
+          <span class="meal-rule">Formula 25oz · 4 feeds</span>
+          <span class="meal-rule">Vit D · 400 IU</span>
+          <span class="meal-rule">Open cup water at meals</span>
+        </div>
+
+        <nav class="meals-subnav">
+          <button class="is-on" data-sub="week">Ideal week</button>
+          <button data-sub="proof">Nutrition proof</button>
+          <button data-sub="breakfast">Breakfast</button>
+          <button data-sub="lunch">Lunch</button>
+          <button data-sub="dinner">Dinner</button>
+          <button data-sub="snack">Snack</button>
+        </nav>
+
+        <!-- Week -->
+        <div class="meals-subpanel is-on" id="sub-week">
+          <table class="week-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Breakfast · 8:00</th>
+                <th>Lunch · 13:00</th>
+                <th>Dinner · 17:30</th>
+                <th>Snack · 15:00</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="day">Mon</td>
+                <td>
+                  <span class="m-name">Scrambled egg + avocado + banana</span>
+                  <span class="m-detail">1 egg · 1 tbsp avo · 2 tbsp banana</span>
+                  <span class="ntag ntag-choline">Choline</span><span class="ntag ntag-fat">Fat</span>
+                  <span class="m-meta">~4 tbsp · 94 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Iron cereal + beef + broccoli + tomato</span>
+                  <span class="m-detail">2 tbsp cereal · 1.5 tbsp beef · 1 tbsp broccoli · 1 tbsp tomato</span>
+                  <span class="ntag ntag-iron">Iron ×2</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-zinc">Zinc</span>
+                  <span class="m-meta">~5.5 tbsp · 115 cal</span>
+                </td>
+                <td>
+                  <span class="m-name"><span class="badge-fish">Fish</span>Salmon congee + bok choy</span>
+                  <span class="m-detail">2 tbsp congee · 1.5 tbsp salmon · 1 tbsp bok choy</span>
+                  <span class="ntag ntag-dha">DHA</span><span class="ntag ntag-iron">Iron</span><span class="ntag ntag-iodine">Iodine</span>
+                  <span class="m-meta">~4.5 tbsp · 58 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Full-fat yogurt + soft mango</span>
+                  <span class="m-detail">2 tbsp yogurt · 2 tbsp mango</span>
+                  <span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~4 tbsp · 42 cal</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="day">Tue</td>
+                <td>
+                  <span class="m-name">Egg in oatmeal + blueberries</span>
+                  <span class="m-detail">1 egg stirred into 2 tbsp oatmeal · 2 tbsp blueberry mash</span>
+                  <span class="ntag ntag-choline">Choline</span><span class="ntag ntag-iron">Iron</span>
+                  <span class="m-meta">~5 tbsp · 115 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Iron cereal + lentil dal + bell pepper</span>
+                  <span class="m-detail">2 tbsp cereal · 2 tbsp dal · 1 tbsp pepper</span>
+                  <span class="ntag ntag-iron">Iron ×2</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-folate">Folate</span>
+                  <span class="m-meta">~5 tbsp · 95 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Chicken &amp; spinach congee</span>
+                  <span class="m-detail">2 tbsp congee · 1.5 tbsp chicken · 1 tbsp spinach</span>
+                  <span class="ntag ntag-iron">Iron</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-folate">Folate</span>
+                  <span class="m-meta">~4.5 tbsp · 55 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Steamed carrot sticks + hummus</span>
+                  <span class="m-detail">2 tbsp carrot · 1 tbsp hummus</span>
+                  <span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-iron">Iron</span>
+                  <span class="m-meta">~3 tbsp · 35 cal</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="day">Wed</td>
+                <td>
+                  <span class="m-name">French toast + strawberries</span>
+                  <span class="m-detail">1 egg-dipped slice · 2 tbsp strawberry</span>
+                  <span class="ntag ntag-choline">Choline</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~4 tbsp · 100 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Iron cereal + chicken + sweet potato + orange</span>
+                  <span class="m-detail">2 tbsp cereal · 1.5 tbsp chicken · 1.5 tbsp sweet potato · orange wedge</span>
+                  <span class="ntag ntag-iron">Iron ×2</span><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~5 tbsp · 105 cal</span>
+                </td>
+                <td>
+                  <span class="m-name"><span class="badge-fish">Fish</span>Sardine congee + carrot</span>
+                  <span class="m-detail">2 tbsp congee · 1.5 tbsp sardine · 1 tbsp carrot</span>
+                  <span class="ntag ntag-dha">DHA</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span>
+                  <span class="m-meta">~4.5 tbsp · 55 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Goat yogurt + blueberry</span>
+                  <span class="m-detail">2 tbsp yogurt · 1 tbsp blueberry mash</span>
+                  <span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span>
+                  <span class="m-meta">~3 tbsp · 32 cal</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="day">Thu</td>
+                <td>
+                  <span class="m-name">Egg congee + spinach</span>
+                  <span class="m-detail">1 egg · 2 tbsp congee · 0.5 tbsp spinach</span>
+                  <span class="ntag ntag-choline">Choline</span><span class="ntag ntag-iron">Iron</span><span class="ntag ntag-folate">Folate</span>
+                  <span class="m-meta">~4.5 tbsp · 100 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Iron cereal + tofu + carrot + orange</span>
+                  <span class="m-detail">2 tbsp cereal · 1.5 tbsp tofu · 1 tbsp carrot · 1 tbsp orange</span>
+                  <span class="ntag ntag-iron">Iron ×2</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~5.5 tbsp · 100 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Beef &amp; broccoli congee</span>
+                  <span class="m-detail">2 tbsp congee · 1.5 tbsp beef · 1 tbsp broccoli</span>
+                  <span class="ntag ntag-iron">Iron</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~4.5 tbsp · 60 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Avocado + soft pear</span>
+                  <span class="m-detail">1 tbsp avo · 2 tbsp pear</span>
+                  <span class="ntag ntag-fat">Fat</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~3 tbsp · 38 cal</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="day">Fri</td>
+                <td>
+                  <span class="m-name">Scrambled egg + sweet potato + kiwi</span>
+                  <span class="m-detail">1 egg · 1.5 tbsp sweet potato · 1 tbsp kiwi</span>
+                  <span class="ntag ntag-choline">Choline</span><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~4.5 tbsp · 105 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Iron cereal + egg &amp; bean mash + tomato</span>
+                  <span class="m-detail">2 tbsp cereal · 2 tbsp egg+bean · 1 tbsp tomato</span>
+                  <span class="ntag ntag-iron">Iron ×3</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-folate">Folate</span>
+                  <span class="m-meta">~5 tbsp · 105 cal</span>
+                </td>
+                <td>
+                  <span class="m-name"><span class="badge-fish">Fish</span>Salmon &amp; pumpkin congee</span>
+                  <span class="m-detail">2 tbsp congee · 1.5 tbsp salmon · 1 tbsp pumpkin</span>
+                  <span class="ntag ntag-dha">DHA</span><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-iodine">Iodine</span>
+                  <span class="m-meta">~4.5 tbsp · 58 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Banana + PB on rice cake</span>
+                  <span class="m-detail">2 tbsp banana · thin PB · rice cake</span>
+                  <span class="ntag ntag-fat">Fat</span><span class="ntag ntag-iron">Iron</span>
+                  <span class="m-meta">~3 tbsp · 55 cal</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="day">Sat</td>
+                <td>
+                  <span class="m-name">Egg muffin cup + melon</span>
+                  <span class="m-detail">1 egg + cheese + spinach mini muffin · 2 tbsp melon</span>
+                  <span class="ntag ntag-choline">Choline</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-folate">Folate</span>
+                  <span class="m-meta">~4 tbsp · 105 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Iron cereal + chicken thigh + broccoli + mango</span>
+                  <span class="m-detail">2 tbsp cereal · 1.5 tbsp chicken · 1 tbsp broccoli · 1 tbsp mango</span>
+                  <span class="ntag ntag-iron">Iron ×2</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~5.5 tbsp · 110 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Lamb &amp; lentil congee</span>
+                  <span class="m-detail">2 tbsp congee · 1.5 tbsp lamb · 1 tbsp lentil</span>
+                  <span class="ntag ntag-iron">Iron</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-folate">Folate</span>
+                  <span class="m-meta">~4.5 tbsp · 65 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Steamed broccoli + cream cheese</span>
+                  <span class="m-detail">2 tbsp broccoli · 0.5 tbsp cream cheese</span>
+                  <span class="ntag ntag-folate">Folate</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-calcium">Calcium</span>
+                  <span class="m-meta">~2.5 tbsp · 25 cal</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="day">Sun</td>
+                <td>
+                  <span class="m-name">Egg pancake + raspberries</span>
+                  <span class="m-detail">1 egg-based pancake · 2 tbsp raspberry</span>
+                  <span class="ntag ntag-choline">Choline</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~4 tbsp · 95 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Iron cereal + beef mini meatballs + kiwi</span>
+                  <span class="m-detail">2 tbsp cereal · 1.5 tbsp meatballs · 1 tbsp kiwi</span>
+                  <span class="ntag ntag-iron">Iron ×2</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~4.5 tbsp · 100 cal</span>
+                </td>
+                <td>
+                  <span class="m-name"><span class="badge-fish">Fish</span>Mackerel congee + bok choy</span>
+                  <span class="m-detail">2 tbsp congee · 1.5 tbsp mackerel · 1 tbsp bok choy</span>
+                  <span class="ntag ntag-dha">DHA</span><span class="ntag ntag-iodine">Iodine</span><span class="ntag ntag-choline">Choline</span>
+                  <span class="m-meta">~4.5 tbsp · 55 cal</span>
+                </td>
+                <td>
+                  <span class="m-name">Full-fat yogurt + diced peach</span>
+                  <span class="m-detail">2 tbsp yogurt · 2 tbsp peach</span>
+                  <span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span><span class="ntag ntag-vitc">Vit C</span>
+                  <span class="m-meta">~4 tbsp · 38 cal</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="week-summary">
+            <strong>Weekly totals.</strong> Egg 7/7 days · Iron cereal 7/7 days · Fish 4/7 days (Mon, Wed, Fri, Sun) · Yogurt 3/7 days (Mon, Wed, Sun) for iodine · Avg ~18 tbsp solids/day · Avg ~305 solid cal/day (~38% of total intake).
+          </div>
+        </div>
+
+        <!-- Nutrition proof -->
+        <div class="meals-subpanel" id="sub-proof">
+          <p class="meal-intro">What the ideal plan delivers on a fish day (Mon) vs a non-fish day (Tue), against the daily recommended intake.</p>
+
+          <table class="nut-proof-table">
+            <thead>
+              <tr><th>Nutrient</th><th>Fish day (Mon)</th><th>Non-fish day (Tue)</th><th>DRI target</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="label">Calories</td><td>~805 kcal</td><td>~796 kcal</td><td>750–900</td></tr>
+              <tr><td class="label">Solid calories</td><td>~309 (38%)</td><td>~300 (38%)</td><td>30–40%</td></tr>
+              <tr><td class="label">Solid tbsp</td><td>~18 tbsp</td><td>~17.5 tbsp</td><td>10–18</td></tr>
+              <tr><td class="label">Iron</td><td class="good">~11.5 mg (105%)</td><td class="good">~11.8 mg (107%)</td><td>11 mg</td></tr>
+              <tr><td class="label">DHA</td><td class="good">~320 mg (256%)</td><td class="warn">~128 mg (102%)</td><td>~125 mg</td></tr>
+              <tr><td class="label">Choline</td><td class="good">~325 mg (217%)</td><td class="good">~320 mg (213%)</td><td>150 mg</td></tr>
+              <tr><td class="label">Calcium</td><td class="good">~460 mg (177%)</td><td class="good">~425 mg (163%)</td><td>260 mg</td></tr>
+              <tr><td class="label">Vitamin D</td><td class="good">~24.8 µg (248%)</td><td class="good">~22.3 µg (223%)</td><td>10 µg</td></tr>
+              <tr><td class="label">Iodine</td><td class="warn">~93 µg (72%)</td><td class="bad">~80 µg (62%)</td><td>130 µg</td></tr>
+              <tr><td class="label">Protein</td><td class="good">~25 g (227%)</td><td class="good">~24 g (218%)</td><td>11 g</td></tr>
+              <tr><td class="label">Zinc</td><td class="good">~4.5 mg (150%)</td><td class="good">~4.0 mg (133%)</td><td>3 mg</td></tr>
+              <tr><td class="label">Folate</td><td class="good">~135 µg (169%)</td><td class="good">~145 µg (181%)</td><td>80 µg</td></tr>
+            </tbody>
+          </table>
+
+          <div class="week-summary" style="margin-top: 22px;">
+            <strong>Every DRI target is met or exceeded except iodine</strong> (62–72% on these two days). To close the gap: serve cod instead of salmon 1×/week (~30 µg/oz), add nori strips to congee, and slightly increase yogurt portions. At 12 months the iodine target drops to 90 µg, making it easier.
+          </div>
+        </div>
+
+        <!-- Breakfast -->
+        <div class="meals-subpanel" id="sub-breakfast">
+          <p class="meal-intro">All breakfasts include 1 whole egg. Goal: egg + carb + fruit. Serving target ~4–6 tbsp total, 95–115 cal.</p>
+
+          <div class="lib-slot-head">Core rotation</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Scrambled egg + avocado toast + banana</span><span class="slot">Core</span></div>
+              <span class="desc">1 egg · 1 tbsp avo on toast finger · 2 tbsp banana. ~94 cal.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline 147 mg</span><span class="ntag ntag-fat">Healthy fat</span><span class="ntag ntag-iron">Iron 0.9 mg</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Egg stirred into oatmeal + blueberries</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp oatmeal + 1 egg mixed in · 2 tbsp berries. ~115 cal.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline</span><span class="ntag ntag-iron">Iron (oat + egg)</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">French toast fingers + strawberries</span><span class="slot">Core</span></div>
+              <span class="desc">1 bread slice dipped in 1 beaten egg, pan-fried · 2 tbsp berries. ~100 cal.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Egg congee + spinach</span><span class="slot">Core</span></div>
+              <span class="desc">1 egg swirled into 2 tbsp warm congee · 0.5 tbsp chopped spinach. ~100 cal.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline</span><span class="ntag ntag-iron">Iron</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Egg muffin cups (egg + cheese + spinach)</span><span class="slot">Core</span></div>
+              <span class="desc">Mini baked muffin with 1 egg, grated cheese, spinach · fruit on side. ~105 cal. Batch-cook and freeze.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+          </div>
+
+          <div class="lib-slot-head">Global swaps</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Tamagoyaki + soft rice + nori<span class="origin"> · Japanese</span></span><span class="slot">Swap</span></div>
+              <span class="desc">1-egg rolled omelette + soft rice + tiny nori strips. ~100 cal. Nori adds iodine.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline</span><span class="ntag ntag-iodine">Iodine</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Egg-veggie jeon + fruit<span class="origin"> · Korean</span></span><span class="slot">Swap</span></div>
+              <span class="desc">1-egg pancake with grated zucchini and carrot, pan-fried in sesame oil · fruit. ~105 cal.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline</span><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Egg + labneh + soft pita<span class="origin"> · Middle Eastern</span></span><span class="slot">Swap</span></div>
+              <span class="desc">1 scrambled egg · 1 tbsp labneh · soft pita fingers · cucumber. ~100 cal.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Moong dal chilla + egg + banana<span class="origin"> · Indian</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Lentil crepe with scrambled egg on top + mashed banana. ~120 cal. Double iron hit.</span>
+              <div class="tags"><span class="ntag ntag-choline">Choline</span><span class="ntag ntag-iron">Iron ×2</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lunch -->
+        <div class="meals-subpanel" id="sub-lunch">
+          <p class="meal-intro">All lunches include iron cereal (2 tbsp). Goal: iron cereal + protein + veggie + vit C. Serving target ~5–7 tbsp total, 95–115 cal.</p>
+
+          <div class="lib-slot-head">Core rotation</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Iron cereal + beef mince + broccoli + tomato</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp cereal · 1.5 tbsp beef · 1 tbsp broccoli · 1 tbsp tomato. ~115 cal. Highest iron lunch.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~7 mg</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-zinc">Zinc</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Iron cereal + lentil dal + bell pepper</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp cereal · 2 tbsp dal · 1 tbsp pepper. ~95 cal. Plant iron + vit C pairing.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~6 mg</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Iron cereal + chicken + sweet potato + orange</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp cereal · 1.5 tbsp chicken · 1.5 tbsp sweet potato · orange wedge. ~105 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~6 mg</span><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Iron cereal + tofu + carrot + orange purée</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp cereal · 1.5 tbsp tofu · 1 tbsp carrot · 1 tbsp orange. ~100 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~6.5 mg</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+          </div>
+
+          <div class="lib-slot-head">Global swaps</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Iron cereal + khichdi (rice + dal + veggies)<span class="origin"> · Indian</span></span><span class="slot">Swap</span></div>
+              <span class="desc">2 tbsp cereal served alongside 3 tbsp khichdi with turmeric and cumin. ~110 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~6 mg</span><span class="ntag ntag-folate">Folate</span><span class="ntag ntag-zinc">Zinc</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Iron cereal + black bean + avocado + mango<span class="origin"> · Mexican</span></span><span class="slot">Swap</span></div>
+              <span class="desc">2 tbsp cereal · 2 tbsp bean mash · 0.5 tbsp avo · mango. ~115 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~6.5 mg</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-fat">Fat</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Iron cereal + pastina + chicken + spinach + lemon<span class="origin"> · Italian</span></span><span class="slot">Swap</span></div>
+              <span class="desc">2 tbsp cereal · 3 tbsp pastina with shredded chicken, spinach, lemon. ~120 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~6 mg</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dinner -->
+        <div class="meals-subpanel" id="sub-dinner">
+          <p class="meal-intro">Fish 4×/week. Protein 1.5–2 tbsp. Goal: protein + grain + veggie. Serving target ~4.5–6 tbsp total, 55–70 cal.</p>
+
+          <div class="lib-slot-head">Fish dinners — target 4× / week</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name"><span class="badge-fish">Fish</span>Salmon &amp; sweet potato congee + bok choy</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp congee · 1.5 tbsp salmon · 1 tbsp sweet potato · 1 tbsp bok choy. ~58 cal.</span>
+              <div class="tags"><span class="ntag ntag-dha">DHA ~200 mg</span><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-iodine">Iodine</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name"><span class="badge-fish">Fish</span>Sardine &amp; pumpkin congee</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp congee · 1.5 tbsp mashed sardine · 1 tbsp pumpkin. ~55 cal. Edible bones = calcium bonus.</span>
+              <div class="tags"><span class="ntag ntag-dha">DHA ~180 mg</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name"><span class="badge-fish">Fish</span>Mackerel congee + egg + bok choy</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp congee · 1.5 tbsp mackerel · bok choy. ~55 cal. Adds a second egg if used.</span>
+              <div class="tags"><span class="ntag ntag-dha">DHA ~250 mg</span><span class="ntag ntag-iodine">Iodine</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name"><span class="badge-fish">Fish</span>Baked salmon + orzo + roasted veggies<span class="origin"> · Greek</span></span><span class="slot">Swap</span></div>
+              <span class="desc">1.5 tbsp salmon · 2 tbsp orzo · 1 tbsp zucchini · tomato. ~65 cal. Non-congee option.</span>
+              <div class="tags"><span class="ntag ntag-dha">DHA ~200 mg</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name"><span class="badge-fish">Fish</span>Salmon onigiri + miso soup<span class="origin"> · Japanese</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Small rice ball with salmon · mild miso with tofu &amp; wakame. ~60 cal. Covers DHA + iodine.</span>
+              <div class="tags"><span class="ntag ntag-dha">DHA ~200 mg</span><span class="ntag ntag-iodine">Iodine</span><span class="ntag ntag-calcium">Calcium</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name"><span class="badge-fish">Fish</span>Sardine fishcakes + tzatziki<span class="origin"> · Mediterranean</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Mini patties (sardine + potato + egg + dill) + yogurt-cucumber dip. ~70 cal.</span>
+              <div class="tags"><span class="ntag ntag-dha">DHA ~180 mg</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span></div>
+            </div>
+          </div>
+
+          <div class="lib-slot-head">Non-fish dinners — 3× / week</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Beef &amp; broccoli congee</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp congee · 1.5 tbsp beef · 1 tbsp broccoli. ~60 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~2.5 mg</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Chicken &amp; spinach congee</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp congee · 1.5 tbsp chicken · 1 tbsp spinach. ~55 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Lamb &amp; lentil congee + zucchini</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp congee · 1 tbsp lamb · 1 tbsp lentil · 1 tbsp zucchini. ~65 cal. Highest iron dinner.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~3 mg</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Baby bulgogi + soft rice + broccoli<span class="origin"> · Korean</span></span><span class="slot">Swap</span></div>
+              <span class="desc">1.5 tbsp beef in pear marinade · 2 tbsp rice · 1 tbsp broccoli. ~65 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~2.5 mg</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Mild lamb keema + peas + soft roti<span class="origin"> · Indian</span></span><span class="slot">Swap</span></div>
+              <span class="desc">1.5 tbsp keema · 1 tbsp peas · soft roti pieces. ~70 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~3 mg</span><span class="ntag ntag-zinc">Zinc</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Mini bolognese + stelline pasta<span class="origin"> · Italian</span></span><span class="slot">Swap</span></div>
+              <span class="desc">1.5 tbsp beef sauce (carrot, zucchini, spinach, tomato) · 2 tbsp small pasta. ~70 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ~2.5 mg</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Groundnut stew + sweet potato + rice<span class="origin"> · West African</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Mild peanut butter stew with chicken · sweet potato · rice. ~70 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron</span><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-fat">Fat</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Chicken + black bean + sweet potato bowl<span class="origin"> · Mexican</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Shredded chicken · mashed black beans · sweet potato · avocado. ~70 cal.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron ×2</span><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-fat">Fat</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Snack -->
+        <div class="meals-subpanel" id="sub-snack">
+          <p class="meal-intro">Snack is a regular meal, not optional. Goal: fruit or veggie + protein or fat. Serving ~2.5–4 tbsp, 25–55 cal. Prioritise yogurt 3×/week for iodine.</p>
+
+          <div class="lib-slot-head">Yogurt-based — 3× / week for iodine</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Full-fat yogurt + mango</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp yogurt · 2 tbsp mango.</span>
+              <div class="tags"><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine ~10 µg</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Goat yogurt + blueberry mash</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp yogurt · 1 tbsp blueberry mash.</span>
+              <div class="tags"><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine ~10 µg</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Yogurt + diced peach</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp yogurt · 2 tbsp peach.</span>
+              <div class="tags"><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine ~10 µg</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+          </div>
+
+          <div class="lib-slot-head">Veggie-based</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Steamed carrot sticks + hummus</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp carrot · 1 tbsp hummus.</span>
+              <div class="tags"><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-iron">Iron</span><span class="ntag ntag-calcium">Calcium</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Steamed broccoli + cream cheese</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp broccoli · 0.5 tbsp cream cheese.</span>
+              <div class="tags"><span class="ntag ntag-folate">Folate</span><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-calcium">Calcium</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Cucumber sticks + guacamole</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp cucumber · 1 tbsp guacamole.</span>
+              <div class="tags"><span class="ntag ntag-fat">Fat</span><span class="ntag ntag-folate">Folate</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Roasted sweet potato wedges + yogurt dip</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp sweet potato · 1 tbsp yogurt dip.</span>
+              <div class="tags"><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span></div>
+            </div>
+          </div>
+
+          <div class="lib-slot-head">Fruit + protein / fat</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Banana + PB on rice cake</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp banana · thin PB · rice cake.</span>
+              <div class="tags"><span class="ntag ntag-fat">Fat</span><span class="ntag ntag-iron">Iron</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Avocado + soft pear pieces</span><span class="slot">Core</span></div>
+              <span class="desc">1 tbsp avo · 2 tbsp pear.</span>
+              <div class="tags"><span class="ntag ntag-fat">Fat</span><span class="ntag ntag-vitc">Vit C</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Soft mango + cheese cube</span><span class="slot">Core</span></div>
+              <span class="desc">2 tbsp mango · 1 cheese cube.</span>
+              <div class="tags"><span class="ntag ntag-vitc">Vit C</span><span class="ntag ntag-calcium">Calcium</span><span class="ntag ntag-iodine">Iodine</span></div>
+            </div>
+          </div>
+
+          <div class="lib-slot-head">Global swaps</div>
+          <div class="lib-list">
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Salmon onigiri (small rice ball)<span class="origin"> · Japanese</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Soft rice · flaked salmon · nori strip. Great for DHA on non-fish dinner days.</span>
+              <div class="tags"><span class="ntag ntag-dha">DHA</span><span class="ntag ntag-iodine">Iodine (nori)</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Ragi porridge + banana<span class="origin"> · South Indian</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Finger millet flour cooked with milk + mashed banana. 3× the calcium of wheat.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron</span><span class="ntag ntag-calcium">Calcium</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Hummus + soft pita + cucumber<span class="origin"> · Middle Eastern</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Smooth hummus (chickpea + tahini) with pita fingers. Tahini = early sesame allergen exposure.</span>
+              <div class="tags"><span class="ntag ntag-iron">Iron</span><span class="ntag ntag-calcium">Calcium (tahini)</span><span class="ntag ntag-fat">Fat</span></div>
+            </div>
+            <div class="lib-card-x">
+              <div class="head"><span class="name">Mashed plantain + peanut butter<span class="origin"> · West African</span></span><span class="slot">Swap</span></div>
+              <span class="desc">Ripe plantain steamed or pan-fried · thin PB spread. Rich in potassium and vit A.</span>
+              <div class="tags"><span class="ntag ntag-vita">Vit A</span><span class="ntag ntag-fat">Fat</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <footer class="colophon">
+      <span>The Lucas Reference — Words &amp; Meals · v1</span>
+      <span>Set in Newsreader · IBM Plex · Noto Serif SC</span>
+    </footer>
+
+  </div>
+</body>
+</html>
+
+  <script>
+    // ── Meals sub-nav
+    const subs = document.querySelectorAll(".meals-subnav button");
+    const subPanels = document.querySelectorAll(".meals-subpanel");
+    subs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-sub");
+        subs.forEach(b => b.classList.toggle("is-on", b === btn));
+        subPanels.forEach(p => p.classList.toggle("is-on", p.id === "sub-" + id));
+        try { localStorage.setItem("lucas-meals-sub", id); } catch (e) {}
+      });
+    });
+    try {
+      const s = localStorage.getItem("lucas-meals-sub");
+      if (s) {
+        const btn = document.querySelector('.meals-subnav button[data-sub="' + s + '"]');
+        if (btn) btn.click();
+      }
+    } catch (e) {}
+  </script>

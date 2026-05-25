@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lucas — First 100 Words (Mandarin)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ───────── Reference-specific styles ───────── */
+
+    .ref-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 40px;
+    }
+    .ref-tab {
+      background: var(--paper);
+      text-decoration: none;
+      color: inherit;
+      border: none;
+      border-right: 1px solid var(--rule-soft);
+      padding: 18px 20px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: background 120ms ease;
+      position: relative;
+    }
+    .ref-tab:last-child { border-right: none; }
+    .ref-tab:hover { background: var(--paper-2); }
+    .ref-tab .tab-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .ref-tab .tab-name {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .ref-tab .tab-sub {
+      font-family: var(--sans);
+      font-size: 11px;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+    .ref-tab.is-on { background: var(--paper-2); }
+    .ref-tab.is-on .tab-num { color: var(--accent); }
+    .ref-tab.is-on::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    .ref-panel { display: none; }
+    .ref-panel.is-on { display: block; }
+
+    /* Word groups */
+    .lex-group {
+      margin-bottom: 36px;
+    }
+    .lex-group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 18px;
+    }
+    .lex-group-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .lex-group-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .lex-group-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--ink-3);
+      margin-left: auto;
+    }
+
+    /* English grid */
+    .en-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .en-cell {
+      padding: 12px 14px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: baseline;
+      gap: 10px;
+      min-height: 48px;
+    }
+    .en-cell .n {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+    }
+    .en-cell .w {
+      font-family: var(--serif);
+      font-size: 19px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .en-cell.is-action .w {
+      font-style: italic;
+    }
+    .en-cell.is-social .w {
+      color: var(--accent);
+    }
+
+    /* Mandarin grid */
+    .zh-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .zh-cell {
+      padding: 14px 16px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: baseline;
+      gap: 10px;
+      min-height: 68px;
+    }
+    .zh-cell .n {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+      padding-top: 6px;
+    }
+    .zh-body { display: flex; flex-direction: column; gap: 2px; }
+    .zh-hanzi {
+      font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+      font-size: 26px;
+      line-height: 1.1;
+      color: var(--ink);
+      font-weight: 400;
+    }
+    .zh-pinyin {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+    .zh-en {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+
+    /* Meals — re-styled cards */
+    .meal-intro {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 16px;
+      color: var(--ink-2);
+      max-width: 64ch;
+      margin: 0 0 22px;
+      line-height: 1.55;
+    }
+    .meal-rules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .meal-rule {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      background: var(--paper);
+    }
+    .meal-rule.is-egg { background: oklch(0.95 0.04 290); color: oklch(0.4 0.16 290); border-color: oklch(0.85 0.06 290); }
+    .meal-rule.is-iron { background: oklch(0.95 0.04 30); color: oklch(0.4 0.14 30); border-color: oklch(0.85 0.07 30); }
+    .meal-rule.is-fish { background: oklch(0.95 0.04 240); color: oklch(0.4 0.14 240); border-color: oklch(0.85 0.07 240); }
+
+    /* Day plan table */
+    .week-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      font-size: 12px;
+    }
+    .week-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-align: left;
+      font-weight: 500;
+      padding: 10px 12px 10px 0;
+      border-bottom: 1px solid var(--ink);
+      vertical-align: bottom;
+    }
+    .week-table td {
+      padding: 14px 12px 14px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      vertical-align: top;
+      font-family: var(--sans);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+    .week-table td.day {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 18px;
+      color: var(--ink);
+      width: 60px;
+      letter-spacing: -0.01em;
+    }
+    .week-table .m-name {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+      margin-bottom: 3px;
+      display: block;
+    }
+    .week-table .m-detail {
+      font-family: var(--sans);
+      font-size: 11.5px;
+      color: var(--ink-2);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .week-table .m-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* Tag chips for nutrients */
+    .ntag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      margin: 1px 3px 1px 0;
+      border-radius: 0;
+      border: 1px solid transparent;
+    }
+    .ntag-iron    { background: oklch(0.96 0.04 30);  color: oklch(0.42 0.16 30); }
+    .ntag-dha     { background: oklch(0.96 0.04 240); color: oklch(0.42 0.14 240); }
+    .ntag-choline { background: oklch(0.96 0.04 290); color: oklch(0.42 0.14 290); }
+    .ntag-calcium { background: oklch(0.96 0.04 140); color: oklch(0.42 0.12 140); }
+    .ntag-vitc    { background: oklch(0.96 0.05 70);  color: oklch(0.45 0.12 60); }
+    .ntag-vita    { background: oklch(0.96 0.05 80);  color: oklch(0.45 0.12 80); }
+    .ntag-iodine  { background: oklch(0.96 0.04 200); color: oklch(0.42 0.12 200); }
+    .ntag-folate  { background: oklch(0.96 0.04 340); color: oklch(0.42 0.14 340); }
+    .ntag-zinc    { background: oklch(0.95 0.01 60);  color: oklch(0.4 0.01 60); }
+    .ntag-fat     { background: oklch(0.95 0.01 60);  color: oklch(0.4 0.01 60); }
+    .badge-fish { color: oklch(0.42 0.14 240); font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; margin-right: 6px; }
+
+    /* Library card list */
+    .lib-slot-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 26px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--ink);
+    }
+    .lib-slot-head:first-child { margin-top: 0; }
+
+    .lib-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-soft);
+      border-left: 1px solid var(--rule-soft);
+    }
+    .lib-card-x {
+      padding: 18px 20px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--paper);
+    }
+    .lib-card-x .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .lib-card-x .name {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+      line-height: 1.25;
+    }
+    .lib-card-x .origin {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-left: 6px;
+    }
+    .lib-card-x .slot {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 3px 7px;
+      border: 1px solid var(--rule-soft);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .lib-card-x .desc {
+      font-family: var(--serif);
+      font-size: 13.5px;
+      color: var(--ink-2);
+      line-height: 1.55;
+      font-style: italic;
+    }
+    .lib-card-x .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .week-summary {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ink-2);
+      background: var(--paper-2);
+      border-left: 2px solid var(--accent);
+      padding: 14px 18px;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .week-summary strong { font-style: normal; color: var(--ink); font-weight: 500; }
+
+    .nut-proof-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .nut-proof-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-align: left;
+      font-weight: 500;
+      padding: 10px 12px 10px 0;
+      border-bottom: 1px solid var(--ink);
+    }
+    .nut-proof-table td {
+      padding: 9px 12px 9px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .nut-proof-table td.label {
+      font-family: var(--serif);
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .good { color: oklch(0.5 0.13 145); font-weight: 500; }
+    .warn { color: oklch(0.55 0.13 60); font-weight: 500; }
+    .bad  { color: oklch(0.5 0.15 25); font-weight: 500; }
+
+    .meals-subnav {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .meals-subnav button {
+      background: none;
+      border: none;
+      padding: 10px 18px 10px 0;
+      margin-right: 18px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 120ms ease, border-color 120ms ease;
+    }
+    .meals-subnav button:hover { color: var(--ink); }
+    .meals-subnav button.is-on { color: var(--ink); border-bottom-color: var(--accent); }
+
+    .meals-subpanel { display: none; }
+    .meals-subpanel.is-on { display: block; }
+
+    @media (max-width: 920px) {
+      .ref-tabs { grid-template-columns: 1fr; }
+      .ref-tab { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+      .en-grid { grid-template-columns: repeat(2, 1fr); }
+      .zh-grid { grid-template-columns: 1fr; }
+      .lib-list { grid-template-columns: 1fr; }
+      .week-table { display: block; overflow-x: auto; }
+    }
+
+    @media print {
+      .ref-tabs, .meals-subnav { display: none !important; }
+      .ref-panel { display: block !important; page-break-before: always; }
+      .ref-panel:first-of-type { page-break-before: auto; }
+      .meals-subpanel { display: block !important; page-break-before: always; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Masthead -->
+    <header class="masthead">
+      <div>
+        <div class="masthead-eyebrow">
+          <span class="dot"></span>
+          <span>The Lucas Reference</span>
+          <span>·</span>
+          <span>Vol. 1 — Mandarin</span>
+        </div>
+        <h1 class="masthead-title">First 100 — Mandarin</h1>
+        <p class="masthead-sub">A bilingual companion to the English list — same families of meaning, voiced in Mandarin.</p>
+      </div>
+      <div class="masthead-meta">
+        <div class="row"><span>Edition</span><span>v1 · 2026</span></div>
+        <div class="row"><span>Pairs with</span><span><a class="masthead-link" href="Lucas Daily Sheet.html">Daily Sheet</a></span></div>
+        <div class="row"><span>&nbsp;</span><span><a class="masthead-link" href="Lucas Growth Plan.html">Growth Plan</a></span></div>
+      </div>
+    </header>
+
+    <section class="ref-panel is-on" id="panel-zh" data-screen-label="02 Mandarin">
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="kicker">Tab 02 · 词汇表</div>
+            <h2 class="display">First 100 — Mandarin</h2>
+          </div>
+          <p class="sub">A bilingual starter set — same families of meaning as the English list, voiced in Mandarin. Each cell carries the character, its pinyin with tone, and the English gloss.</p>
+        </div>
+
+        <!-- Family -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 01</span>
+            <span class="lex-group-title">家人 · Family</span>
+            <span class="lex-group-count">10 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">001</span><div class="zh-body"><span class="zh-hanzi">妈妈</span><span class="zh-pinyin">māma</span><span class="zh-en">mommy</span></div></div>
+            <div class="zh-cell"><span class="n">002</span><div class="zh-body"><span class="zh-hanzi">爸爸</span><span class="zh-pinyin">bàba</span><span class="zh-en">daddy</span></div></div>
+            <div class="zh-cell"><span class="n">003</span><div class="zh-body"><span class="zh-hanzi">宝宝</span><span class="zh-pinyin">bǎobao</span><span class="zh-en">baby</span></div></div>
+            <div class="zh-cell"><span class="n">004</span><div class="zh-body"><span class="zh-hanzi">爷爷</span><span class="zh-pinyin">yéye</span><span class="zh-en">grandpa (paternal)</span></div></div>
+            <div class="zh-cell"><span class="n">005</span><div class="zh-body"><span class="zh-hanzi">奶奶</span><span class="zh-pinyin">nǎinai</span><span class="zh-en">grandma (paternal)</span></div></div>
+            <div class="zh-cell"><span class="n">006</span><div class="zh-body"><span class="zh-hanzi">外公</span><span class="zh-pinyin">wàigōng</span><span class="zh-en">grandpa (maternal)</span></div></div>
+            <div class="zh-cell"><span class="n">007</span><div class="zh-body"><span class="zh-hanzi">外婆</span><span class="zh-pinyin">wàipó</span><span class="zh-en">grandma (maternal)</span></div></div>
+            <div class="zh-cell"><span class="n">008</span><div class="zh-body"><span class="zh-hanzi">哥哥</span><span class="zh-pinyin">gēge</span><span class="zh-en">big brother</span></div></div>
+            <div class="zh-cell"><span class="n">009</span><div class="zh-body"><span class="zh-hanzi">姐姐</span><span class="zh-pinyin">jiějie</span><span class="zh-en">big sister</span></div></div>
+            <div class="zh-cell"><span class="n">010</span><div class="zh-body"><span class="zh-hanzi">弟弟</span><span class="zh-pinyin">dìdi</span><span class="zh-en">little brother</span></div></div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 02</span>
+            <span class="lex-group-title">身体 · Body</span>
+            <span class="lex-group-count">10 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">011</span><div class="zh-body"><span class="zh-hanzi">眼睛</span><span class="zh-pinyin">yǎnjing</span><span class="zh-en">eye</span></div></div>
+            <div class="zh-cell"><span class="n">012</span><div class="zh-body"><span class="zh-hanzi">鼻子</span><span class="zh-pinyin">bízi</span><span class="zh-en">nose</span></div></div>
+            <div class="zh-cell"><span class="n">013</span><div class="zh-body"><span class="zh-hanzi">嘴巴</span><span class="zh-pinyin">zuǐba</span><span class="zh-en">mouth</span></div></div>
+            <div class="zh-cell"><span class="n">014</span><div class="zh-body"><span class="zh-hanzi">耳朵</span><span class="zh-pinyin">ěrduo</span><span class="zh-en">ear</span></div></div>
+            <div class="zh-cell"><span class="n">015</span><div class="zh-body"><span class="zh-hanzi">手</span><span class="zh-pinyin">shǒu</span><span class="zh-en">hand</span></div></div>
+            <div class="zh-cell"><span class="n">016</span><div class="zh-body"><span class="zh-hanzi">脚</span><span class="zh-pinyin">jiǎo</span><span class="zh-en">foot</span></div></div>
+            <div class="zh-cell"><span class="n">017</span><div class="zh-body"><span class="zh-hanzi">头</span><span class="zh-pinyin">tóu</span><span class="zh-en">head</span></div></div>
+            <div class="zh-cell"><span class="n">018</span><div class="zh-body"><span class="zh-hanzi">头发</span><span class="zh-pinyin">tóufa</span><span class="zh-en">hair</span></div></div>
+            <div class="zh-cell"><span class="n">019</span><div class="zh-body"><span class="zh-hanzi">牙</span><span class="zh-pinyin">yá</span><span class="zh-en">tooth</span></div></div>
+            <div class="zh-cell"><span class="n">020</span><div class="zh-body"><span class="zh-hanzi">肚子</span><span class="zh-pinyin">dùzi</span><span class="zh-en">tummy</span></div></div>
+          </div>
+        </div>
+
+        <!-- Animals -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 03</span>
+            <span class="lex-group-title">动物 · Animals</span>
+            <span class="lex-group-count">10 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">021</span><div class="zh-body"><span class="zh-hanzi">狗</span><span class="zh-pinyin">gǒu</span><span class="zh-en">dog</span></div></div>
+            <div class="zh-cell"><span class="n">022</span><div class="zh-body"><span class="zh-hanzi">猫</span><span class="zh-pinyin">māo</span><span class="zh-en">cat</span></div></div>
+            <div class="zh-cell"><span class="n">023</span><div class="zh-body"><span class="zh-hanzi">鸟</span><span class="zh-pinyin">niǎo</span><span class="zh-en">bird</span></div></div>
+            <div class="zh-cell"><span class="n">024</span><div class="zh-body"><span class="zh-hanzi">鱼</span><span class="zh-pinyin">yú</span><span class="zh-en">fish</span></div></div>
+            <div class="zh-cell"><span class="n">025</span><div class="zh-body"><span class="zh-hanzi">鸭子</span><span class="zh-pinyin">yāzi</span><span class="zh-en">duck</span></div></div>
+            <div class="zh-cell"><span class="n">026</span><div class="zh-body"><span class="zh-hanzi">牛</span><span class="zh-pinyin">niú</span><span class="zh-en">cow</span></div></div>
+            <div class="zh-cell"><span class="n">027</span><div class="zh-body"><span class="zh-hanzi">猪</span><span class="zh-pinyin">zhū</span><span class="zh-en">pig</span></div></div>
+            <div class="zh-cell"><span class="n">028</span><div class="zh-body"><span class="zh-hanzi">马</span><span class="zh-pinyin">mǎ</span><span class="zh-en">horse</span></div></div>
+            <div class="zh-cell"><span class="n">029</span><div class="zh-body"><span class="zh-hanzi">羊</span><span class="zh-pinyin">yáng</span><span class="zh-en">sheep</span></div></div>
+            <div class="zh-cell"><span class="n">030</span><div class="zh-body"><span class="zh-hanzi">兔子</span><span class="zh-pinyin">tùzi</span><span class="zh-en">bunny</span></div></div>
+          </div>
+        </div>
+
+        <!-- Food -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 04</span>
+            <span class="lex-group-title">吃的喝的 · Food &amp; drink</span>
+            <span class="lex-group-count">12 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">031</span><div class="zh-body"><span class="zh-hanzi">奶</span><span class="zh-pinyin">nǎi</span><span class="zh-en">milk</span></div></div>
+            <div class="zh-cell"><span class="n">032</span><div class="zh-body"><span class="zh-hanzi">水</span><span class="zh-pinyin">shuǐ</span><span class="zh-en">water</span></div></div>
+            <div class="zh-cell"><span class="n">033</span><div class="zh-body"><span class="zh-hanzi">饭</span><span class="zh-pinyin">fàn</span><span class="zh-en">rice / meal</span></div></div>
+            <div class="zh-cell"><span class="n">034</span><div class="zh-body"><span class="zh-hanzi">面</span><span class="zh-pinyin">miàn</span><span class="zh-en">noodles</span></div></div>
+            <div class="zh-cell"><span class="n">035</span><div class="zh-body"><span class="zh-hanzi">蛋</span><span class="zh-pinyin">dàn</span><span class="zh-en">egg</span></div></div>
+            <div class="zh-cell"><span class="n">036</span><div class="zh-body"><span class="zh-hanzi">苹果</span><span class="zh-pinyin">píngguǒ</span><span class="zh-en">apple</span></div></div>
+            <div class="zh-cell"><span class="n">037</span><div class="zh-body"><span class="zh-hanzi">香蕉</span><span class="zh-pinyin">xiāngjiāo</span><span class="zh-en">banana</span></div></div>
+            <div class="zh-cell"><span class="n">038</span><div class="zh-body"><span class="zh-hanzi">肉</span><span class="zh-pinyin">ròu</span><span class="zh-en">meat</span></div></div>
+            <div class="zh-cell"><span class="n">039</span><div class="zh-body"><span class="zh-hanzi">粥</span><span class="zh-pinyin">zhōu</span><span class="zh-en">congee</span></div></div>
+            <div class="zh-cell"><span class="n">040</span><div class="zh-body"><span class="zh-hanzi">菜</span><span class="zh-pinyin">cài</span><span class="zh-en">vegetable / dish</span></div></div>
+            <div class="zh-cell"><span class="n">041</span><div class="zh-body"><span class="zh-hanzi">饼干</span><span class="zh-pinyin">bǐnggān</span><span class="zh-en">cookie</span></div></div>
+            <div class="zh-cell"><span class="n">042</span><div class="zh-body"><span class="zh-hanzi">汤</span><span class="zh-pinyin">tāng</span><span class="zh-en">soup</span></div></div>
+          </div>
+        </div>
+
+        <!-- Home -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 05</span>
+            <span class="lex-group-title">家里 · At home</span>
+            <span class="lex-group-count">10 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">043</span><div class="zh-body"><span class="zh-hanzi">床</span><span class="zh-pinyin">chuáng</span><span class="zh-en">bed</span></div></div>
+            <div class="zh-cell"><span class="n">044</span><div class="zh-body"><span class="zh-hanzi">门</span><span class="zh-pinyin">mén</span><span class="zh-en">door</span></div></div>
+            <div class="zh-cell"><span class="n">045</span><div class="zh-body"><span class="zh-hanzi">椅子</span><span class="zh-pinyin">yǐzi</span><span class="zh-en">chair</span></div></div>
+            <div class="zh-cell"><span class="n">046</span><div class="zh-body"><span class="zh-hanzi">桌子</span><span class="zh-pinyin">zhuōzi</span><span class="zh-en">table</span></div></div>
+            <div class="zh-cell"><span class="n">047</span><div class="zh-body"><span class="zh-hanzi">杯子</span><span class="zh-pinyin">bēizi</span><span class="zh-en">cup</span></div></div>
+            <div class="zh-cell"><span class="n">048</span><div class="zh-body"><span class="zh-hanzi">勺子</span><span class="zh-pinyin">sháozi</span><span class="zh-en">spoon</span></div></div>
+            <div class="zh-cell"><span class="n">049</span><div class="zh-body"><span class="zh-hanzi">碗</span><span class="zh-pinyin">wǎn</span><span class="zh-en">bowl</span></div></div>
+            <div class="zh-cell"><span class="n">050</span><div class="zh-body"><span class="zh-hanzi">灯</span><span class="zh-pinyin">dēng</span><span class="zh-en">light / lamp</span></div></div>
+            <div class="zh-cell"><span class="n">051</span><div class="zh-body"><span class="zh-hanzi">书</span><span class="zh-pinyin">shū</span><span class="zh-en">book</span></div></div>
+            <div class="zh-cell"><span class="n">052</span><div class="zh-body"><span class="zh-hanzi">球</span><span class="zh-pinyin">qiú</span><span class="zh-en">ball</span></div></div>
+          </div>
+        </div>
+
+        <!-- Vehicles -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 06</span>
+            <span class="lex-group-title">交通工具 · Things that go</span>
+            <span class="lex-group-count">5 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">053</span><div class="zh-body"><span class="zh-hanzi">车</span><span class="zh-pinyin">chē</span><span class="zh-en">car</span></div></div>
+            <div class="zh-cell"><span class="n">054</span><div class="zh-body"><span class="zh-hanzi">公交车</span><span class="zh-pinyin">gōngjiāochē</span><span class="zh-en">bus</span></div></div>
+            <div class="zh-cell"><span class="n">055</span><div class="zh-body"><span class="zh-hanzi">火车</span><span class="zh-pinyin">huǒchē</span><span class="zh-en">train</span></div></div>
+            <div class="zh-cell"><span class="n">056</span><div class="zh-body"><span class="zh-hanzi">飞机</span><span class="zh-pinyin">fēijī</span><span class="zh-en">plane</span></div></div>
+            <div class="zh-cell"><span class="n">057</span><div class="zh-body"><span class="zh-hanzi">船</span><span class="zh-pinyin">chuán</span><span class="zh-en">boat</span></div></div>
+          </div>
+        </div>
+
+        <!-- Nature -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 07</span>
+            <span class="lex-group-title">大自然 · Outside &amp; nature</span>
+            <span class="lex-group-count">7 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">058</span><div class="zh-body"><span class="zh-hanzi">太阳</span><span class="zh-pinyin">tàiyáng</span><span class="zh-en">sun</span></div></div>
+            <div class="zh-cell"><span class="n">059</span><div class="zh-body"><span class="zh-hanzi">月亮</span><span class="zh-pinyin">yuèliang</span><span class="zh-en">moon</span></div></div>
+            <div class="zh-cell"><span class="n">060</span><div class="zh-body"><span class="zh-hanzi">星星</span><span class="zh-pinyin">xīngxing</span><span class="zh-en">star</span></div></div>
+            <div class="zh-cell"><span class="n">061</span><div class="zh-body"><span class="zh-hanzi">树</span><span class="zh-pinyin">shù</span><span class="zh-en">tree</span></div></div>
+            <div class="zh-cell"><span class="n">062</span><div class="zh-body"><span class="zh-hanzi">花</span><span class="zh-pinyin">huā</span><span class="zh-en">flower</span></div></div>
+            <div class="zh-cell"><span class="n">063</span><div class="zh-body"><span class="zh-hanzi">雨</span><span class="zh-pinyin">yǔ</span><span class="zh-en">rain</span></div></div>
+            <div class="zh-cell"><span class="n">064</span><div class="zh-body"><span class="zh-hanzi">雪</span><span class="zh-pinyin">xuě</span><span class="zh-en">snow</span></div></div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 08</span>
+            <span class="lex-group-title">动作 · Actions</span>
+            <span class="lex-group-count">15 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">065</span><div class="zh-body"><span class="zh-hanzi">吃</span><span class="zh-pinyin">chī</span><span class="zh-en">eat</span></div></div>
+            <div class="zh-cell"><span class="n">066</span><div class="zh-body"><span class="zh-hanzi">喝</span><span class="zh-pinyin">hē</span><span class="zh-en">drink</span></div></div>
+            <div class="zh-cell"><span class="n">067</span><div class="zh-body"><span class="zh-hanzi">睡</span><span class="zh-pinyin">shuì</span><span class="zh-en">sleep</span></div></div>
+            <div class="zh-cell"><span class="n">068</span><div class="zh-body"><span class="zh-hanzi">走</span><span class="zh-pinyin">zǒu</span><span class="zh-en">walk</span></div></div>
+            <div class="zh-cell"><span class="n">069</span><div class="zh-body"><span class="zh-hanzi">跑</span><span class="zh-pinyin">pǎo</span><span class="zh-en">run</span></div></div>
+            <div class="zh-cell"><span class="n">070</span><div class="zh-body"><span class="zh-hanzi">跳</span><span class="zh-pinyin">tiào</span><span class="zh-en">jump</span></div></div>
+            <div class="zh-cell"><span class="n">071</span><div class="zh-body"><span class="zh-hanzi">坐</span><span class="zh-pinyin">zuò</span><span class="zh-en">sit</span></div></div>
+            <div class="zh-cell"><span class="n">072</span><div class="zh-body"><span class="zh-hanzi">玩</span><span class="zh-pinyin">wán</span><span class="zh-en">play</span></div></div>
+            <div class="zh-cell"><span class="n">073</span><div class="zh-body"><span class="zh-hanzi">看</span><span class="zh-pinyin">kàn</span><span class="zh-en">look / watch</span></div></div>
+            <div class="zh-cell"><span class="n">074</span><div class="zh-body"><span class="zh-hanzi">听</span><span class="zh-pinyin">tīng</span><span class="zh-en">listen</span></div></div>
+            <div class="zh-cell"><span class="n">075</span><div class="zh-body"><span class="zh-hanzi">来</span><span class="zh-pinyin">lái</span><span class="zh-en">come</span></div></div>
+            <div class="zh-cell"><span class="n">076</span><div class="zh-body"><span class="zh-hanzi">去</span><span class="zh-pinyin">qù</span><span class="zh-en">go</span></div></div>
+            <div class="zh-cell"><span class="n">077</span><div class="zh-body"><span class="zh-hanzi">抱</span><span class="zh-pinyin">bào</span><span class="zh-en">hug / hold</span></div></div>
+            <div class="zh-cell"><span class="n">078</span><div class="zh-body"><span class="zh-hanzi">笑</span><span class="zh-pinyin">xiào</span><span class="zh-en">smile / laugh</span></div></div>
+            <div class="zh-cell"><span class="n">079</span><div class="zh-body"><span class="zh-hanzi">哭</span><span class="zh-pinyin">kū</span><span class="zh-en">cry</span></div></div>
+          </div>
+        </div>
+
+        <!-- Descriptors -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 09</span>
+            <span class="lex-group-title">形容词 · Describing words</span>
+            <span class="lex-group-count">8 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">080</span><div class="zh-body"><span class="zh-hanzi">大</span><span class="zh-pinyin">dà</span><span class="zh-en">big</span></div></div>
+            <div class="zh-cell"><span class="n">081</span><div class="zh-body"><span class="zh-hanzi">小</span><span class="zh-pinyin">xiǎo</span><span class="zh-en">little</span></div></div>
+            <div class="zh-cell"><span class="n">082</span><div class="zh-body"><span class="zh-hanzi">多</span><span class="zh-pinyin">duō</span><span class="zh-en">more / many</span></div></div>
+            <div class="zh-cell"><span class="n">083</span><div class="zh-body"><span class="zh-hanzi">热</span><span class="zh-pinyin">rè</span><span class="zh-en">hot</span></div></div>
+            <div class="zh-cell"><span class="n">084</span><div class="zh-body"><span class="zh-hanzi">冷</span><span class="zh-pinyin">lěng</span><span class="zh-en">cold</span></div></div>
+            <div class="zh-cell"><span class="n">085</span><div class="zh-body"><span class="zh-hanzi">好</span><span class="zh-pinyin">hǎo</span><span class="zh-en">good</span></div></div>
+            <div class="zh-cell"><span class="n">086</span><div class="zh-body"><span class="zh-hanzi">是</span><span class="zh-pinyin">shì</span><span class="zh-en">is / yes</span></div></div>
+            <div class="zh-cell"><span class="n">087</span><div class="zh-body"><span class="zh-hanzi">不</span><span class="zh-pinyin">bù</span><span class="zh-en">no / not</span></div></div>
+          </div>
+        </div>
+
+        <!-- Social + Colors -->
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 10</span>
+            <span class="lex-group-title">日常 · Everyday words</span>
+            <span class="lex-group-count">8 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">088</span><div class="zh-body"><span class="zh-hanzi">你</span><span class="zh-pinyin">nǐ</span><span class="zh-en">you</span></div></div>
+            <div class="zh-cell"><span class="n">089</span><div class="zh-body"><span class="zh-hanzi">我</span><span class="zh-pinyin">wǒ</span><span class="zh-en">I / me</span></div></div>
+            <div class="zh-cell"><span class="n">090</span><div class="zh-body"><span class="zh-hanzi">你好</span><span class="zh-pinyin">nǐhǎo</span><span class="zh-en">hello</span></div></div>
+            <div class="zh-cell"><span class="n">091</span><div class="zh-body"><span class="zh-hanzi">再见</span><span class="zh-pinyin">zàijiàn</span><span class="zh-en">goodbye</span></div></div>
+            <div class="zh-cell"><span class="n">092</span><div class="zh-body"><span class="zh-hanzi">谢谢</span><span class="zh-pinyin">xièxie</span><span class="zh-en">thank you</span></div></div>
+            <div class="zh-cell"><span class="n">093</span><div class="zh-body"><span class="zh-hanzi">请</span><span class="zh-pinyin">qǐng</span><span class="zh-en">please</span></div></div>
+            <div class="zh-cell"><span class="n">094</span><div class="zh-body"><span class="zh-hanzi">对不起</span><span class="zh-pinyin">duìbuqǐ</span><span class="zh-en">sorry</span></div></div>
+            <div class="zh-cell"><span class="n">095</span><div class="zh-body"><span class="zh-hanzi">晚安</span><span class="zh-pinyin">wǎn'ān</span><span class="zh-en">goodnight</span></div></div>
+          </div>
+        </div>
+
+        <div class="lex-group">
+          <div class="lex-group-head">
+            <span class="lex-group-num">§ 11</span>
+            <span class="lex-group-title">颜色 · Colors</span>
+            <span class="lex-group-count">5 words</span>
+          </div>
+          <div class="zh-grid">
+            <div class="zh-cell"><span class="n">096</span><div class="zh-body"><span class="zh-hanzi">红</span><span class="zh-pinyin">hóng</span><span class="zh-en">red</span></div></div>
+            <div class="zh-cell"><span class="n">097</span><div class="zh-body"><span class="zh-hanzi">蓝</span><span class="zh-pinyin">lán</span><span class="zh-en">blue</span></div></div>
+            <div class="zh-cell"><span class="n">098</span><div class="zh-body"><span class="zh-hanzi">黄</span><span class="zh-pinyin">huáng</span><span class="zh-en">yellow</span></div></div>
+            <div class="zh-cell"><span class="n">099</span><div class="zh-body"><span class="zh-hanzi">绿</span><span class="zh-pinyin">lǜ</span><span class="zh-en">green</span></div></div>
+            <div class="zh-cell"><span class="n">100</span><div class="zh-body"><span class="zh-hanzi">白</span><span class="zh-pinyin">bái</span><span class="zh-en">white</span></div></div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <footer class="colophon">
+      <span>The Lucas Reference — Words &amp; Meals · v1</span>
+      <span>Set in Newsreader · IBM Plex · Noto Serif SC</span>
+    </footer>
+
+  </div>
+</body>
+</html>

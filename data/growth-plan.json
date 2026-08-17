@@ -1,0 +1,616 @@
+{
+  "savedAt": "2026-08-17T02:23:16.514Z",
+  "savedBy": "",
+  "kind": "growth plan",
+  "data": {
+    "rows.ms3.Gross motor": [
+      {
+        "id": "s-0",
+        "label": "Walks well, runs stiffly"
+      },
+      {
+        "id": "s-1",
+        "label": "Walks up stairs holding a hand"
+      },
+      {
+        "id": "s-2",
+        "label": "Climbs on and off the couch"
+      },
+      {
+        "id": "s-3",
+        "label": "Kicks a ball forward"
+      },
+      {
+        "id": "s-4",
+        "label": "Pulls a toy while walking"
+      },
+      {
+        "id": "s-5",
+        "label": "Seats himself in a small chair"
+      }
+    ],
+    "rows.ms3.Fine motor": [
+      {
+        "id": "s-0",
+        "label": "Stacks 3–4 blocks"
+      },
+      {
+        "id": "s-1",
+        "label": "Scribbles spontaneously"
+      },
+      {
+        "id": "s-2",
+        "label": "Self-feeds with a spoon, less mess"
+      },
+      {
+        "id": "s-3",
+        "label": "Drinks from an open cup"
+      },
+      {
+        "id": "s-4",
+        "label": "Takes off socks and shoes"
+      },
+      {
+        "id": "s-5",
+        "label": "Turns board-book pages one at a time"
+      }
+    ],
+    "rows.ms3.Language": [
+      {
+        "id": "s-0",
+        "label": "10–20 words used with meaning"
+      },
+      {
+        "id": "s-1",
+        "label": "Points to 3 body parts on request"
+      },
+      {
+        "id": "s-2",
+        "label": "Follows a 2-step direction"
+      },
+      {
+        "id": "s-3",
+        "label": "Says 'no' and means it"
+      },
+      {
+        "id": "s-4",
+        "label": "Names a familiar object in a book"
+      },
+      {
+        "id": "s-5",
+        "label": "Tries to imitate new words"
+      }
+    ],
+    "rows.ms3.Social / cognitive": [
+      {
+        "id": "s-0",
+        "label": "Pretend play — feeds a doll"
+      },
+      {
+        "id": "s-1",
+        "label": "Points at things to show us"
+      },
+      {
+        "id": "s-2",
+        "label": "Brings a book to be read"
+      },
+      {
+        "id": "s-3",
+        "label": "First real tantrums"
+      },
+      {
+        "id": "s-4",
+        "label": "Clings in unfamiliar places"
+      },
+      {
+        "id": "s-5",
+        "label": "Plays alongside other children"
+      }
+    ],
+    "rows.ms6.Gross motor": [
+      {
+        "id": "s-0",
+        "label": "Runs confidently"
+      },
+      {
+        "id": "s-1",
+        "label": "Walks up and down stairs at a rail"
+      },
+      {
+        "id": "s-2",
+        "label": "Jumps with both feet off the floor"
+      },
+      {
+        "id": "s-3",
+        "label": "Throws a ball overhand"
+      },
+      {
+        "id": "s-4",
+        "label": "Pushes a ride-on with his feet"
+      },
+      {
+        "id": "s-5",
+        "label": "Squats to play and stands back up"
+      }
+    ],
+    "rows.ms6.Fine motor": [
+      {
+        "id": "s-0",
+        "label": "Stacks 6 or more blocks"
+      },
+      {
+        "id": "s-1",
+        "label": "Imitates a vertical line"
+      },
+      {
+        "id": "s-2",
+        "label": "Unscrews a lid, turns a knob"
+      },
+      {
+        "id": "s-3",
+        "label": "Uses a fork"
+      },
+      {
+        "id": "s-4",
+        "label": "Washes his own hands"
+      },
+      {
+        "id": "s-5",
+        "label": "Pulls on loose shoes"
+      }
+    ],
+    "rows.ms6.Language": [
+      {
+        "id": "s-0",
+        "label": "50+ words"
+      },
+      {
+        "id": "s-1",
+        "label": "Two-word phrases regularly"
+      },
+      {
+        "id": "s-2",
+        "label": "Asks 'what's that?'"
+      },
+      {
+        "id": "s-3",
+        "label": "Follows two unrelated directions"
+      },
+      {
+        "id": "s-4",
+        "label": "Names 5+ body parts"
+      },
+      {
+        "id": "s-5",
+        "label": "Uses 'me' and 'mine'"
+      }
+    ],
+    "rows.ms6.Social / cognitive": [
+      {
+        "id": "s-0",
+        "label": "Sorts by shape and colour"
+      },
+      {
+        "id": "s-1",
+        "label": "Pretend play in short sequences"
+      },
+      {
+        "id": "s-2",
+        "label": "Points to pictures when named"
+      },
+      {
+        "id": "s-3",
+        "label": "Defiance, testing our limits"
+      },
+      {
+        "id": "s-4",
+        "label": "Insists on doing things himself"
+      },
+      {
+        "id": "s-5",
+        "label": "Brief real play with a peer"
+      }
+    ],
+    "rows.tools3.Acquire": [
+      {
+        "id": "s-0",
+        "label": "Ride-on or push trike"
+      },
+      {
+        "id": "s-1",
+        "label": "Wooden puzzle (4–6 pieces)"
+      },
+      {
+        "id": "s-2",
+        "label": "Chunky crayons + big paper"
+      },
+      {
+        "id": "s-3",
+        "label": "Shape sorter"
+      },
+      {
+        "id": "s-4",
+        "label": "Pretend kitchen or doll + spoon"
+      },
+      {
+        "id": "s-5",
+        "label": "Drum, shaker or xylophone"
+      },
+      {
+        "id": "s-6",
+        "label": "Stacking rings and cups"
+      },
+      {
+        "id": "s-7",
+        "label": "Soft indoor ball"
+      },
+      {
+        "id": "s-8",
+        "label": "Climbing pillow or tunnel"
+      },
+      {
+        "id": "s-9",
+        "label": "Low step stool for the sink"
+      }
+    ],
+    "rows.tools3.Skills to practise": [
+      {
+        "id": "s-0",
+        "label": "Running in open space daily"
+      },
+      {
+        "id": "s-1",
+        "label": "Stairs, holding one hand"
+      },
+      {
+        "id": "s-2",
+        "label": "Spoon and first fork"
+      },
+      {
+        "id": "s-3",
+        "label": "Open-cup drinking at meals"
+      },
+      {
+        "id": "s-4",
+        "label": "Naming body parts in the mirror"
+      },
+      {
+        "id": "s-5",
+        "label": "Two-step requests"
+      },
+      {
+        "id": "s-6",
+        "label": "Putting toys back in the basket"
+      },
+      {
+        "id": "s-7",
+        "label": "Tooth-brushing with help"
+      }
+    ],
+    "rows.tools6.Acquire": [
+      {
+        "id": "s-0",
+        "label": "Balance bike or scooter"
+      },
+      {
+        "id": "s-1",
+        "label": "Play dough + cutters"
+      },
+      {
+        "id": "s-2",
+        "label": "Magnetic tiles or Duplo"
+      },
+      {
+        "id": "s-3",
+        "label": "Water table or sandbox"
+      },
+      {
+        "id": "s-4",
+        "label": "Easel + washable paint"
+      },
+      {
+        "id": "s-5",
+        "label": "Dress-up and pretend basket"
+      },
+      {
+        "id": "s-6",
+        "label": "12-piece puzzles"
+      },
+      {
+        "id": "s-7",
+        "label": "Picture-word books"
+      },
+      {
+        "id": "s-8",
+        "label": "Climbing triangle or low slide"
+      },
+      {
+        "id": "s-9",
+        "label": "Pull-along wagon for outdoors"
+      }
+    ],
+    "rows.tools6.Skills to practise": [
+      {
+        "id": "s-0",
+        "label": "Jumping with both feet"
+      },
+      {
+        "id": "s-1",
+        "label": "Throwing and kicking a ball"
+      },
+      {
+        "id": "s-2",
+        "label": "Pedalling or scooting"
+      },
+      {
+        "id": "s-3",
+        "label": "Scribbling lines and circles"
+      },
+      {
+        "id": "s-4",
+        "label": "Fork use at every meal"
+      },
+      {
+        "id": "s-5",
+        "label": "Pulling on shoes and coat"
+      },
+      {
+        "id": "s-6",
+        "label": "Naming colours"
+      },
+      {
+        "id": "s-7",
+        "label": "Counting to three"
+      },
+      {
+        "id": "s-8",
+        "label": "Taking turns with us"
+      },
+      {
+        "id": "s-9",
+        "label": "Potty awareness, no pressure"
+      }
+    ],
+    "rows.hl3": [
+      {
+        "id": "s-0",
+        "label": "15-month well visit",
+        "note": "Growth, language check-in"
+      },
+      {
+        "id": "s-1",
+        "label": "15-mo vaccines",
+        "note": "DTaP #4 · Hib #4 · PCV #4"
+      },
+      {
+        "id": "s-2",
+        "label": "MMR / Varicella",
+        "note": "Catch-up if not given at 12 mo"
+      },
+      {
+        "id": "s-3",
+        "label": "18-month well visit",
+        "note": "Includes the M-CHAT screen"
+      },
+      {
+        "id": "s-4",
+        "label": "Hep A #2",
+        "note": "6 mo after the first dose"
+      },
+      {
+        "id": "s-5",
+        "label": "Dental cleaning",
+        "note": "Plus fluoride varnish"
+      },
+      {
+        "id": "s-6",
+        "label": "Anemia recheck",
+        "note": "If the 12-mo screen was flagged"
+      }
+    ],
+    "rows.hl6": [
+      {
+        "id": "s-0",
+        "label": "24-month well visit",
+        "note": "BMI tracking starts at 2"
+      },
+      {
+        "id": "s-1",
+        "label": "M-CHAT at 24 mo",
+        "note": "Second routine autism screen"
+      },
+      {
+        "id": "s-2",
+        "label": "Lead screen",
+        "note": "Routine again at 24 mo"
+      },
+      {
+        "id": "s-3",
+        "label": "Flu shot",
+        "note": "Seasonal, single dose now"
+      },
+      {
+        "id": "s-4",
+        "label": "Dental cleaning",
+        "note": "6-month cadence"
+      },
+      {
+        "id": "s-5",
+        "label": "Vision & hearing",
+        "note": "Pediatrician — gross screen"
+      }
+    ],
+    "rows.prep.Feeding": [
+      {
+        "id": "s-0",
+        "label": "Switch to whole milk"
+      },
+      {
+        "id": "s-1",
+        "label": "Phase out bottle by 15–18 mo"
+      },
+      {
+        "id": "s-2",
+        "label": "Settle on open vs straw cup"
+      },
+      {
+        "id": "s-3",
+        "label": "Snack vs meal structure"
+      },
+      {
+        "id": "s-4",
+        "label": "Daycare / nanny feeding plan"
+      }
+    ],
+    "rows.prep.Sleep": [
+      {
+        "id": "s-0",
+        "label": "Drop morning nap, 1-nap day"
+      },
+      {
+        "id": "s-1",
+        "label": "Night-wake response plan"
+      },
+      {
+        "id": "s-2",
+        "label": "Sleep sack → blanket transition"
+      },
+      {
+        "id": "s-3",
+        "label": "Crib safety re-check"
+      },
+      {
+        "id": "s-4",
+        "label": "Travel sleep setup"
+      }
+    ],
+    "rows.prep.Safety": [
+      {
+        "id": "s-0",
+        "label": "Childproof for walker / climber"
+      },
+      {
+        "id": "s-1",
+        "label": "Stair gates top & bottom"
+      },
+      {
+        "id": "s-2",
+        "label": "Cabinet & appliance locks"
+      },
+      {
+        "id": "s-3",
+        "label": "Anchor heavy furniture"
+      },
+      {
+        "id": "s-4",
+        "label": "Outlet covers everywhere"
+      },
+      {
+        "id": "s-5",
+        "label": "Re-confirm rear-facing car seat"
+      }
+    ],
+    "rows.prep.Social & discipline": [
+      {
+        "id": "s-0",
+        "label": "Approach to tantrums"
+      },
+      {
+        "id": "s-1",
+        "label": "Limit-setting language we share"
+      },
+      {
+        "id": "s-2",
+        "label": "Daycare / preschool research"
+      },
+      {
+        "id": "s-3",
+        "label": "Playdates & social time"
+      },
+      {
+        "id": "s-4",
+        "label": "Screen-time rule of thumb"
+      }
+    ],
+    "rows.prep.Logistics": [
+      {
+        "id": "s-0",
+        "label": "Childcare locked for next 6 mo"
+      },
+      {
+        "id": "s-1",
+        "label": "Travel plans (passport?)"
+      },
+      {
+        "id": "s-2",
+        "label": "Size 18m wardrobe by season"
+      },
+      {
+        "id": "s-3",
+        "label": "Insurance / pediatrician confirmed"
+      },
+      {
+        "id": "s-4",
+        "label": "Emergency contacts current"
+      }
+    ],
+    "rows.prep.Parent learning": [
+      {
+        "id": "s-0",
+        "label": "Book: language development"
+      },
+      {
+        "id": "s-1",
+        "label": "Book: toddler sleep / tantrums"
+      },
+      {
+        "id": "s-2",
+        "label": "Class: music / swim / library"
+      },
+      {
+        "id": "s-3",
+        "label": "Topic to research this quarter"
+      }
+    ],
+    "rows.prep.__cats": [
+      {
+        "id": "s-0",
+        "label": "Feeding"
+      },
+      {
+        "id": "s-1",
+        "label": "Sleep"
+      },
+      {
+        "id": "s-2",
+        "label": "Safety"
+      },
+      {
+        "id": "s-3",
+        "label": "Social & discipline"
+      },
+      {
+        "id": "s-4",
+        "label": "Logistics"
+      },
+      {
+        "id": "s-5",
+        "label": "Parent learning"
+      }
+    ],
+    "rows.cn": [
+      {
+        "id": "s-0",
+        "label": ""
+      },
+      {
+        "id": "s-1",
+        "label": ""
+      },
+      {
+        "id": "s-2",
+        "label": ""
+      }
+    ]
+  }
+}
